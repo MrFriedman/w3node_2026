@@ -1,0 +1,15 @@
+export const colors = {
+  bg: '#F3EEE4',
+  card: '#FFFCF7',
+  ink: '#1A2422',
+  muted: '#5E675F',
+  line: '#E3D9C8',
+  teal: '#0E5C57',
+  tealDark: '#083632',
+  mint: '#E7F3F1',
+  amberBg: '#FFF3D8',
+  amberInk: '#7A4E00',
+  dangerBg: '#F8E8E4',
+  dangerInk: '#8C2F2F',
+  white: '#FFFFFF',
+}
