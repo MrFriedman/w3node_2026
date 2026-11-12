@@ -1,11 +1,13 @@
 ---
 tags:
   - checkpoint
-status: ready
+status: saved
 date: 2026-11-12
 ---
 
 # Project concept
+
+**Saved on BuilderBase**, Thu 12 Nov 2026. The paste below is what went in. The wording is still accurate.
 
 Paste into BuilderBase.
 

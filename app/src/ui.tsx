@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { colors } from './theme'
+import { colors, fonts, radius, spacing, typography } from './theme'
 
 export function Card({ children }: { children: ReactNode }) {
   return <View style={styles.card}>{children}</View>
@@ -18,12 +18,10 @@ export function Muted({ children }: { children: ReactNode }) {
   return <Text style={styles.muted}>{children}</Text>
 }
 
-export function Banner({ tone, children }: { tone: 'amber' | 'danger' | 'mint'; children: ReactNode }) {
-  const toneStyle = tone === 'amber' ? styles.amber : tone === 'danger' ? styles.danger : styles.mint
-  const textStyle = tone === 'amber' ? styles.amberText : tone === 'danger' ? styles.dangerText : styles.mintText
+export function Banner({ tone, children }: { tone: 'notice' | 'planned'; children: ReactNode }) {
   return (
-    <View style={[styles.banner, toneStyle]}>
-      <Text style={textStyle}>{children}</Text>
+    <View style={[styles.banner, tone === 'notice' ? styles.notice : styles.planned]}>
+      <Text style={styles.bannerText}>{children}</Text>
     </View>
   )
 }
@@ -52,7 +50,7 @@ export function Button({
         pressed && !disabled ? styles.pressed : null,
       ]}
     >
-      <Text style={[styles.buttonText, kind === 'ghost' ? styles.ghostText : styles.primaryText]}>{label}</Text>
+      <Text style={[styles.buttonText, disabled && styles.disabledText]}>{label}</Text>
     </Pressable>
   )
 }
@@ -61,47 +59,30 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.card,
     borderColor: colors.line,
-    borderRadius: 16,
+    borderRadius: radius.card,
     borderWidth: 1,
-    gap: 8,
-    padding: 16,
+    gap: spacing.sm,
+    padding: 20,
   },
-  title: {
-    color: colors.ink,
-    fontSize: 22,
-    fontWeight: '700',
-  },
-  body: {
-    color: colors.ink,
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  muted: {
-    color: colors.muted,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  banner: {
-    borderRadius: 12,
-    padding: 12,
-  },
-  amber: { backgroundColor: colors.amberBg },
-  danger: { backgroundColor: colors.dangerBg },
-  mint: { backgroundColor: colors.mint },
-  amberText: { color: colors.amberInk, fontSize: 14, lineHeight: 20 },
-  dangerText: { color: colors.dangerInk, fontSize: 14, lineHeight: 20, fontWeight: '600' },
-  mintText: { color: colors.tealDark, fontSize: 14, lineHeight: 20 },
+  title: { ...typography.heading, color: colors.ink },
+  body: { ...typography.body, color: colors.ink },
+  muted: { ...typography.caption, color: colors.muted },
+  banner: { borderRadius: radius.card, padding: spacing.md },
+  notice: { backgroundColor: colors.amberLight },
+  planned: { backgroundColor: colors.soft },
+  bannerText: { ...typography.label, color: colors.ink },
   button: {
     alignItems: 'center',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    justifyContent: 'center',
+    minHeight: 52,
+    borderRadius: radius.button,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
-  primary: { backgroundColor: colors.teal },
-  ghost: { backgroundColor: colors.white, borderColor: colors.line, borderWidth: 1 },
-  disabled: { opacity: 0.45 },
+  primary: { backgroundColor: colors.amber },
+  ghost: { backgroundColor: colors.card, borderColor: colors.ink, borderWidth: 1 },
+  disabled: { backgroundColor: colors.soft, borderColor: colors.line },
   pressed: { opacity: 0.8 },
-  buttonText: { fontSize: 16, fontWeight: '600' },
-  primaryText: { color: colors.white },
-  ghostText: { color: colors.ink },
+  buttonText: { ...typography.body, fontFamily: fonts.emphasis, color: colors.ink, textAlign: 'center' },
+  disabledText: { color: colors.muted },
 })

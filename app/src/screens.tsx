@@ -8,7 +8,7 @@ import {
   SEPOLIA_CHAIN_ID,
   SEPOLIA_NAME,
 } from '../../shared/network.ts'
-import { colors } from './theme'
+import { colors, fonts, radius, spacing, typography } from './theme'
 import { Banner, Body, Button, Card, Muted, Title } from './ui'
 import { ON_DEVICE_SIGNING } from './wdk'
 
@@ -24,7 +24,7 @@ export function WalletScreen() {
         <Text style={styles.mono}>{DEFAULT_SEPOLIA_USDT}</Text>
         <Muted>Default contract from Tether’s wdk-examples. The script reads the on-chain name and decimals before it quotes.</Muted>
       </Card>
-      <Banner tone="amber">
+      <Banner tone="notice">
         {ON_DEVICE_SIGNING
           ? 'On-device signing is on.'
           : 'On-device signing is not wired. This screen does not read a seed and does not show a balance. Run scripts/wallet.ts address and balance for the testnet wallet.'}
@@ -88,7 +88,7 @@ export function RewardsScreen() {
         <Body>4. Sign and submit from the treasury seed.</Body>
         <Body>5. Stay pending until the same hash is confirmed. Reconnect checks that hash again.</Body>
       </Card>
-      <Banner tone="mint">No rewards in this build. Nothing here pays a shop on its own.</Banner>
+      <Banner tone="planned">No rewards in this build. Nothing here pays a shop on its own.</Banner>
       <Muted>TODO: call the wallet script when the partner platform marks a contribution verified. The CLI path is send, opened with the treasury seed.</Muted>
     </View>
   )
@@ -158,7 +158,7 @@ export function CashOutScreen() {
   return (
     <View style={styles.stack}>
       <Title>Cash out</Title>
-      <Banner tone="danger">SIMULATED mobile-money cash-out. No USDT moves. No mobile-money payout is sent.</Banner>
+      <Banner tone="notice">SIMULATED mobile-money cash-out. No USDT moves. No mobile-money payout is sent.</Banner>
       <Card>
         <Text style={styles.label}>Mobile number</Text>
         <TextInput
@@ -194,39 +194,32 @@ export function CashOutScreen() {
 }
 
 const styles = StyleSheet.create({
-  stack: { gap: 12 },
-  label: {
-    color: colors.muted,
-    fontSize: 13,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  mono: {
-    color: colors.ink,
-    fontSize: 13,
-    lineHeight: 18,
-  },
+  stack: { gap: spacing.md },
+  label: { ...typography.label, color: colors.muted },
+  mono: { ...typography.caption, color: colors.ink },
   bundle: {
     backgroundColor: colors.card,
     borderColor: colors.line,
-    borderRadius: 14,
+    borderRadius: radius.card,
     borderWidth: 1,
-    padding: 14,
+    padding: spacing.md,
   },
   bundleOn: {
-    borderColor: colors.teal,
-    backgroundColor: colors.mint,
+    borderColor: colors.amberDark,
+    backgroundColor: colors.amberLight,
   },
-  bundleTitle: { color: colors.ink, fontSize: 16, fontWeight: '700' },
-  bundleMeta: { color: colors.muted, fontSize: 14, marginTop: 4 },
+  bundleTitle: { ...typography.body, fontFamily: fonts.emphasis, color: colors.ink },
+  bundleMeta: { ...typography.caption, color: colors.muted, marginTop: spacing.xs, fontVariant: ['tabular-nums'] },
   input: {
+    ...typography.body,
+    backgroundColor: colors.card,
     borderColor: colors.line,
-    borderRadius: 10,
+    borderRadius: radius.input,
     borderWidth: 1,
     color: colors.ink,
-    fontSize: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    minHeight: 52,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
   },
-  error: { color: colors.dangerInk, fontSize: 14 },
+  error: { ...typography.caption, color: colors.red },
 })

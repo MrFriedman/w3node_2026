@@ -8,26 +8,41 @@ date: 2026-11-12
 
 # Demo script
 
-Three minutes. One shop owner. One payment from review toward a receipt. One failure and a recovery. Label every simulated part.
+Three minutes, preferably 1–2. One shop owner. One payment from review to a receipt. One failure and a recovery. Label every simulated part.
+
+The shop wallet is funded and an R20 top-up has already confirmed. See [[Testnet]]. Prefer a fresh send only if you mean to spend again. Otherwise quote a pack, then re-check the existing hash. Do not show a seed, a `.env` file, or a mainnet network.
+
+Suggested recording (Cmd+Shift+5): the architecture diagram, `npm test` in `scripts/`, a quote or send plus `status --hash`, then the Expo app.
 
 ## 0:00 — Who
 
 "This is a spaza owner. A safety or stock app wants to charge them for credits, and to pay them when a price or an incident report checks out. They do not have a card."
 
-## 0:25 — Review
+## 0:20 — Review
 
-Open HowlPay. Tap a credit pack. Read credits, rand, USDT, and Sepolia out loud. Tap Cancel. Nothing is signed.
+Open HowlPay. Tap a credit pack. Read credits, rand, USDT, and Sepolia out loud. Tap Cancel. Nothing is signed. If the wired UI is not ready, say Approve on the phone is still disabled and switch to the script.
 
-## 0:55 — The payment, and the failure
+## 0:50 — The payment
 
-Run the wallet script for that pack.
+From `scripts/`:
 
-- **If the address has test USDT and Sepolia ETH:** quote, show recipient, amount, fee, and network, then `--approve`. Read the hash. Immediately run `status` and show pending or confirmed. That is the receipt.
-- **If it is still empty:** the script stops because the balance is short and does not sign. Say that plainly. That stop is the failure. Do not cut in a fake success.
+```bash
+npm test
+npm run wallet -- quote --bundle r20
+```
+
+Then either:
+
+- a new send, only if you want a second payment: `npm run wallet -- send --bundle r20 --approve --wait`
+- or re-check the confirmed R20 hash: `npm run wallet -- status --hash 0x946a27d941c971b01ff40951b4c7f30f57c650c556a8e0786c1b41f36db4a918`
+
+Read recipient, amount, fee, and network, then the hash and confirmed. That is the receipt. Etherscan: https://sepolia.etherscan.io/tx/0x946a27d941c971b01ff40951b4c7f30f57c650c556a8e0786c1b41f36db4a918
+
+If the Expo UI has been wired, show the live balance and the same flow on the phone instead, including pending then confirmed.
 
 ## 1:40 — Recovery
 
-Take the hash from a submit, or any 32-byte hash if nothing was submitted. Turn the story to a dropped signal: the shop still has one hash. Run `status --hash` again. Say you are not sending a second payment. If the hash is unknown, the line is "not seen yet", which is the correct recovery, not an error to hide.
+Take that hash. Turn the story to a dropped signal: the shop still has one hash. Run `status --hash` again, or trigger reconnect in the app. Say you are not sending a second payment. Pending stays pending. Confirmed stays confirmed. "Not seen yet" is the correct answer for an unknown hash, not an error to hide.
 
 ## 2:20 — Simulated cash-out
 
@@ -36,5 +51,3 @@ Open Cash out. The banner says simulated. Enter a mobile number and an amount. S
 ## 2:45 — Close
 
 "Credits are recorded by the partner only after confirmation. That ledger is not in this demo. Next is a relief pool that pays out on a verified incident."
-
-Do not show a seed, a `.env` file, or a mainnet network.

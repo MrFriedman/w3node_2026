@@ -19,11 +19,11 @@ A platform opens a USDT wallet for the shop. The shop pays for service credits. 
 
 ## 1:45 — Show the payment (about 90s)
 
-One screen: credits, rand, USDT, network. Approve or cancel. Point at the video if the live network is risky. Say the cash-out is simulated. If you only have the unfunded wallet, say the script refuses to sign rather than inventing a receipt.
+One screen: credits, rand, USDT, network. Approve or cancel. Point at the video if the live network is risky. Say the cash-out is simulated. A live R20 top-up has already confirmed on Sepolia; you can re-check that hash rather than inventing a receipt or sending a second payment. Details in [[Testnet]] and [[Demo Script]].
 
 ## 3:15 — How it is built (about 60s)
 
-Tether WDK. Sepolia. Five steps, then the same hash on reconnect. The script is the signer today. The phone UI does not pretend to sign. This is testnet, not a local mock of a chain.
+Tether WDK. Sepolia. Five steps, then the same hash on reconnect. The script is the signer today, unless the Expo wiring lands before the pitch. The phone UI must not pretend to sign if Approve is still disabled. This is testnet, not a local mock of a chain.
 
 ## 4:15 — Why it can be a business (about 45s)
 

@@ -14,14 +14,16 @@ Each USDT movement follows Tether's five steps: validate address, network, and t
 
 1. The shop picks a service-credit pack. The demo catalog is R20/10, R40/20, R80/50, R150/100, R300/220. Rand becomes USDT with the checkpoint FX snapshot, rounded up.
 2. The screen shows credits, rand, USDT, and Sepolia. The fee is quoted by the script, not invented in the UI.
-3. Cancel writes nothing. Approve is disabled in the app until the on-device worklet exists. The script signs only with `--approve`.
+3. Cancel writes nothing. Approve is still disabled in the app until the on-device worklet exists. The script signs only with `--approve`.
 4. The partner records credits only after the receipt is confirmed. This repo does not call that backend.
+
+The script path is proven live: an R20 pack was sent to the treasury and confirmed. See [[Testnet]]. The phone UI does not yet show a live balance, send a live top-up, or move through pending and confirmed states. That wiring is the next build task.
 
 ## Reward payout
 
 1. The shop submits a data contribution (an incident report, a price, or similar).
 2. The partner verifies it and passes the shop's USDT address to the treasury.
-3. The treasury script, opened with the treasury seed, runs the same five steps. The shop does not sign.
+3. The treasury script, opened with the treasury seed, runs the same five steps. The shop does not sign. Do not open or print `.env.treasury` while doing this.
 4. The hash is stored as pending. Credits or a "paid" flag wait for confirmation.
 
 ## Reconnect and re-check
@@ -29,6 +31,10 @@ Each USDT movement follows Tether's five steps: validate address, network, and t
 After submit, the hash is the only handle. If the signal drops, show the last-known status. On reconnect, call `status --hash` on that same hash. A missing receipt means "not seen yet". Do not send a second transfer for the same payment. A reverted or dropped hash does not record credits.
 
 The app remembers a hash only while it is open. The script re-checks any hash you pass. Persisting the hash on the device is still open. See [[Tasks]].
+
+The confirmed R20 hash can be re-checked without sending again:
+
+`npm run wallet -- status --hash 0x946a27d941c971b01ff40951b4c7f30f57c650c556a8e0786c1b41f36db4a918`
 
 ## Cash-out
 

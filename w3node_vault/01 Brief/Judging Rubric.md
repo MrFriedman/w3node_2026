@@ -16,7 +16,7 @@ Polished, intuitive UX. A judge should follow a top-up from review to receipt wi
 
 ## Technical — 30
 
-Clean code, deployed on testnet or mainnet, core features working. A **local-only demo caps around 14**. Talking to Sepolia from the wallet script is the testnet evidence. The Expo shell is not a store build. Do not describe the phone UI as a deployed wallet.
+Clean code, deployed on testnet or mainnet, core features working. A **local-only demo caps around 14**. Talking to Sepolia from the wallet script is the testnet evidence, and a live R20 top-up has now confirmed (see [[Testnet]]). The Expo shell is not a store build. Do not describe the phone UI as a deployed wallet.
 
 ## Business — 30
 

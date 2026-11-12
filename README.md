@@ -120,6 +120,7 @@ Third-party code and references:
 - [Tether WDK React Native starter](https://github.com/tetherto/wdk-starter-react-native) (Apache-2.0) and its [setup guide](https://docs.wdk.tether.io/examples-and-starters/react-native-starter/). That starter is not vendored. It configures mainnet Arbitrum and Polygon as well as Sepolia, and it needs a BareKit worklet this checkpoint does not run. The Expo app is an original shell. The starter is the intended base for on-device signing.
 - [Tether wdk-examples `.env.example`](https://github.com/tetherto/wdk-examples/blob/main/.env.example) for the default Sepolia RPC pattern and the Test Tether USD contract.
 - Expo `blank-typescript` template from `create-expo-app` (SDK 58), including the default icon assets. The Expo template is MIT, copyright 2015–present 650 Industries, Inc.
+- The author’s existing design system supplied the visual tokens and mobile component specifications. Inter and Space Grotesk are distributed under the SIL Open Font License through Expo Google Fonts.
 - Frankfurter (European Central Bank reference rates) for the 11 Nov 2026 USD/ZAR snapshot used as the demo FX rate.
 
 Security: testnet only. The script refuses a chain id other than Sepolia 11155111. Never commit seeds, private keys, or a filled-in `.env`. `.env` is gitignored. The wallet script will not generate a phrase and will not print the one you set. Do not fund the public BIP-39 test mnemonic, and do not use any test phrase on mainnet.
