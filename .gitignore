@@ -21,3 +21,6 @@ seed.txt
 seeds/
 *.mnemonic
 *.seed
+
+# Per-device Obsidian window layout. Plugins, theme, and the rest of .obsidian stay tracked.
+w3node_vault/.obsidian/workspace*.json
