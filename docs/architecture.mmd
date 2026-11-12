@@ -1,0 +1,39 @@
+---
+title: HowlPay — USDT payments for informal traders
+---
+flowchart TB
+  subgraph shopPhone ["Shop phone"]
+    direction TB
+    ui["HowlPay app"]
+    wdk["Tether WDK wallet<br/>seed stays on the device"]
+    ui --> wdk
+  end
+
+  subgraph partnerBackend ["Partner platform backend"]
+    direction TB
+    api["Accounts and service-credit ledger"]
+    verify["Verification<br/>data contributions"]
+    api --> verify
+  end
+
+  treasury["Treasury reward script<br/>Node.js WDK, treasury seed"]
+  chain["Sepolia testnet<br/>USDT"]
+  cash["Simulated mobile-money cash-out<br/>labelled, no live payout"]
+
+  ui -->|"Shop account and data contributions"| api
+  verify -->|"Verified contribution"| treasury
+  wdk -->|"Top-up USDT"| chain
+  treasury -->|"Micro-reward USDT"| chain
+  chain -->|"Confirmed transaction hash"| api
+  api -->|"Credit service credits after confirmation"| ui
+  ui -.->|"Demo only"| cash
+
+  classDef phone fill:#E5F3F2,stroke:#0E6E6A,color:#142321,stroke-width:1.5px
+  classDef partner fill:#FFF6E8,stroke:#C47B2B,color:#142321,stroke-width:1.5px
+  classDef pay fill:#E7EEF8,stroke:#2C4C7C,color:#142321,stroke-width:1.5px
+  classDef sim fill:#F8E8E4,stroke:#8C2F2F,color:#142321,stroke-width:1.5px
+
+  class ui,wdk phone
+  class api,verify partner
+  class treasury,chain pay
+  class cash sim

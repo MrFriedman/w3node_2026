@@ -1,0 +1,26 @@
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+*.tsbuildinfo
+.DS_Store
+npm-debug.log*
+
+# Secrets. .env.example is the only env file that belongs in git.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+seed.txt
+seeds/
+*.mnemonic
+*.seed
+
+# Per-device Obsidian window layout. Plugins, theme, and the rest of .obsidian stay tracked.
+w3node_vault/.obsidian/workspace*.json
