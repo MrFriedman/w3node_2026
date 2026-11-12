@@ -1,0 +1,41 @@
+---
+title: Howl Wallet — shop USDT on top of Howl
+---
+flowchart TB
+  subgraph shopPhone ["Shop phone"]
+    direction TB
+    ui["Howl Wallet app"]
+    wdk["Tether WDK wallet<br/>seed stays on the device"]
+    ui --> wdk
+  end
+
+  subgraph howlBackend ["Howl backend — existing product"]
+    direction TB
+    supa["Supabase<br/>auth, reports, alert-token ledger"]
+    verify["Verification<br/>incident within 100 m"]
+    telegram["Telegram @HowlZaBot"]
+    supa --> verify
+    supa --> telegram
+  end
+
+  treasury["Treasury reward script<br/>Node.js WDK, treasury seed"]
+  chain["Sepolia testnet<br/>USDT"]
+  cash["Simulated mobile-money cash-out<br/>labelled, no live payout"]
+
+  ui -->|"Shop account and incident reports"| supa
+  verify -->|"Verified report"| treasury
+  wdk -->|"Top-up USDT"| chain
+  treasury -->|"Micro-reward USDT"| chain
+  chain -->|"Confirmed transaction hash"| supa
+  supa -->|"Credit alert tokens after confirmation"| ui
+  ui -.->|"Demo only"| cash
+
+  classDef phone fill:#E5F3F2,stroke:#0E6E6A,color:#142321,stroke-width:1.5px
+  classDef howl fill:#FFF6E8,stroke:#C47B2B,color:#142321,stroke-width:1.5px
+  classDef pay fill:#E7EEF8,stroke:#2C4C7C,color:#142321,stroke-width:1.5px
+  classDef sim fill:#F8E8E4,stroke:#8C2F2F,color:#142321,stroke-width:1.5px
+
+  class ui,wdk phone
+  class supa,verify,telegram howl
+  class treasury,chain pay
+  class cash sim
