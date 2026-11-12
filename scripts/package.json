@@ -1,0 +1,26 @@
+{
+  "name": "howl-wallet-scripts",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "wallet": "node wallet.ts",
+    "test": "node --test test/howl.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tetherto/wdk": "^1.0.0-beta.23",
+    "@tetherto/wdk-wallet-evm": "^1.0.0-beta.26",
+    "dotenv": "^18.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^5.8.3"
+  },
+  "overrides": {
+    "@tetherto/wdk-wallet": "1.0.0-beta.25"
+  }
+}
