@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
+import { PRODUCT_NAME } from '../shared/brand.ts'
 import { isTxHash } from '../shared/money.ts'
 import { CashOutScreen, RewardsScreen, StatusScreen, TopUpScreen, WalletScreen } from './src/screens'
 import { colors } from './src/theme'
@@ -24,8 +25,8 @@ export default function App() {
     <View style={styles.root}>
       <StatusBar style="dark" />
       <View style={styles.header}>
-        <Text style={styles.kicker}>Howl · Cape Town shops</Text>
-        <Text style={styles.wordmark}>Howl Wallet</Text>
+        <Text style={styles.kicker}>USDT for informal traders</Text>
+        <Text style={styles.wordmark}>{PRODUCT_NAME}</Text>
         <Text style={styles.headerNote}>Sepolia testnet · USDT</Text>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabs}>

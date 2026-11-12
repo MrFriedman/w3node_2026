@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import WDK from '@tetherto/wdk'
 import WalletManagerEvm from '@tetherto/wdk-wallet-evm'
 import { resolveApproval } from '../shared/approval.ts'
+import { PRODUCT_NAME } from '../shared/brand.ts'
 import {
   bundleById,
   formatUnits,
@@ -12,7 +13,7 @@ import {
   isTxHash,
   parseTokenAmount,
   usdtBaseUnitsForZar,
-  type AlertBundle,
+  type CreditPack,
 } from '../shared/money.ts'
 import {
   CHECKPOINT_FX_NOTE,
@@ -67,7 +68,7 @@ type Args = {
   help: boolean
 }
 
-const HELP = `Howl Wallet — Sepolia testnet USDT
+const HELP = `${PRODUCT_NAME} — Sepolia testnet USDT
 
 Uses @tetherto/wdk and @tetherto/wdk-wallet-evm.
 The seed is read from WDK_SEED_PHRASE and is never printed.
@@ -80,12 +81,12 @@ The seed is read from WDK_SEED_PHRASE and is never printed.
   npm run wallet -- send --bundle r20 --cancel
   npm run wallet -- status --hash 0x...
 
-Bundles: r20 (R20 / 10 tokens), r40, r80, r150, r300.
---bundle pays HOWL_TREASURY_ADDRESS unless --to is set.
+Bundles: r20 (R20 / 10 credits), r40, r80, r150, r300.
+--bundle pays PLATFORM_TREASURY_ADDRESS unless --to is set.
 send signs only with --approve, or after you type "approve" at a terminal.
 With no choice, send cancels. status re-checks one hash and does not send.
 
-Alert tokens are not credited here. Howl's backend should credit a bundle
+Service credits are not recorded here. The partner platform should credit a pack
 only after status shows finality confirmed and success true.
 `
 
@@ -138,14 +139,14 @@ function fxRate(): { rate: string; note: string } {
   return { rate: CHECKPOINT_ZAR_PER_USDT, note: CHECKPOINT_FX_NOTE }
 }
 
-function paymentFromArgs(args: Args): { bundle?: AlertBundle; amount: bigint; recipient: string; rateNote: string } {
+function paymentFromArgs(args: Args): { bundle?: CreditPack; amount: bigint; recipient: string; rateNote: string } {
   if (args.bundle && args.usdt) throw new Error('Pass either --bundle or --usdt, not both.')
   const fx = fxRate()
   if (args.bundle) {
     const bundle = bundleById(args.bundle)
     if (!bundle) throw new Error(`Unknown bundle "${args.bundle}". Use r20, r40, r80, r150, or r300.`)
-    const recipient = args.to ?? process.env.HOWL_TREASURY_ADDRESS?.trim()
-    if (!recipient) throw new Error('Set HOWL_TREASURY_ADDRESS or pass --to for a bundle top-up.')
+    const recipient = args.to ?? process.env.PLATFORM_TREASURY_ADDRESS?.trim()
+    if (!recipient) throw new Error('Set PLATFORM_TREASURY_ADDRESS or pass --to for a credit-pack top-up.')
     return {
       bundle,
       amount: usdtBaseUnitsForZar(bundle.zar, fx.rate),
@@ -191,7 +192,7 @@ async function openSession(): Promise<Session> {
 }
 
 function printNetwork(session: Session, from: string): void {
-  console.log('Howl Wallet')
+  console.log(PRODUCT_NAME)
   console.log(`Network: ${SEPOLIA_NAME} (chain id ${SEPOLIA_CHAIN_ID}), verified at the RPC`)
   console.log(`RPC: ${session.rpcUrl}`)
   console.log(`Token: ${session.token.name} (${session.token.symbol}), ${session.token.decimals} decimals`)
@@ -212,9 +213,9 @@ function printReceipt(receipt: Receipt): void {
   } else if (receipt.finality === 'dropped') {
     console.log('Dropped. This hash will not settle. A replacement would be a new hash, not a second copy of this one.')
   } else if (receipt.success === false) {
-    console.log('The transfer reverted. Do not credit alert tokens for this hash.')
+    console.log('The transfer reverted. Do not record service credits for this hash.')
   } else if (receipt.success === true) {
-    console.log('Confirmed. Howl may credit alert tokens for this hash. This script does not write to Supabase.')
+    console.log('Confirmed. The partner platform may record service credits for this hash. This script does not write to that backend.')
   }
 }
 
@@ -261,7 +262,7 @@ async function quoteOrSend(session: Session, args: Args, send: boolean): Promise
   console.log('Step 1 — validate address, network, and token: ok')
   if (payment.bundle) {
     console.log(
-      `Bundle: ${payment.bundle.id} — R${payment.bundle.zar} for ${payment.bundle.tokens} alert tokens`,
+      `Bundle: ${payment.bundle.id} — R${payment.bundle.zar} for ${payment.bundle.credits} service credits`,
     )
   }
   console.log(`To: ${payment.recipient}`)

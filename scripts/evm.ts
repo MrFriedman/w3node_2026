@@ -11,7 +11,7 @@ export async function rpc(url: string, method: string, params: unknown[]): Promi
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'user-agent': 'howl-wallet-checkpoint/0.1',
+      'user-agent': 'howlpay-checkpoint/0.1',
     },
     body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
   })

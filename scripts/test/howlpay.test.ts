@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { resolveApproval } from '../../shared/approval.ts'
 import {
-  ALERT_BUNDLES,
+  CREDIT_PACKS,
   bundleById,
   formatUnits,
   isEvmAddress,
@@ -12,9 +12,9 @@ import {
 } from '../../shared/money.ts'
 import { CHECKPOINT_ZAR_PER_USDT } from '../../shared/network.ts'
 
-test('alert bundles match Howl shop prices', () => {
+test('demo credit packs keep the checkpoint catalog', () => {
   assert.deepEqual(
-    ALERT_BUNDLES.map((bundle) => [bundle.id, bundle.zar, bundle.tokens]),
+    CREDIT_PACKS.map((bundle) => [bundle.id, bundle.zar, bundle.credits]),
     [
       ['r20', 20, 10],
       ['r40', 40, 20],
@@ -23,7 +23,7 @@ test('alert bundles match Howl shop prices', () => {
       ['r300', 300, 220],
     ],
   )
-  assert.equal(bundleById('R80')?.tokens, 50)
+  assert.equal(bundleById('R80')?.credits, 50)
   assert.equal(bundleById('nope'), undefined)
 })
 

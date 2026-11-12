@@ -1,44 +1,44 @@
-# Howl Wallet architecture
+# HowlPay architecture
 
-Howl Wallet is a payments add-on for [Howl](https://howlza.co.za). Howl already warns Cape Town shops about unrest. This repo adds a self-custodial USDT wallet, token top-ups, and verified-report rewards. Howl's Supabase app, Vercel site, Telegram bot, Resend mail, PostHog, and SnapScan checkout stay in Howl's private repo. They are not implemented here.
+HowlPay is a USDT wallet and payments layer. A partner platform that serves informal traders (safety alerts, stock ordering, business tools) can open a wallet per shop. Shops pay for service credits in USDT and receive a small USDT reward when the partner verifies data they contribute. The partner's own backend is not in this repo.
 
 The chain in this checkpoint is Ethereum Sepolia. The working signer is `scripts/wallet.ts` (`@tetherto/wdk` and `@tetherto/wdk-wallet-evm`). The Expo app is the shop-facing shell. On-device signing through the [Tether WDK React Native starter](https://github.com/tetherto/wdk-starter-react-native) is not wired yet.
 
-![Howl Wallet architecture](architecture.png)
+The working name is HowlPay. It lives in `shared/brand.ts`.
+
+![HowlPay architecture](architecture.png)
 
 ## Diagram
 
 ```mermaid
 ---
-title: Howl Wallet — shop USDT on top of Howl
+title: HowlPay — USDT payments for informal traders
 ---
 flowchart TB
   subgraph shopPhone ["Shop phone"]
     direction TB
-    ui["Howl Wallet app"]
+    ui["HowlPay app"]
     wdk["Tether WDK wallet<br/>seed stays on the device"]
     ui --> wdk
   end
 
-  subgraph howlBackend ["Howl backend — existing product"]
+  subgraph partnerBackend ["Partner platform backend"]
     direction TB
-    supa["Supabase<br/>auth, reports, alert-token ledger"]
-    verify["Verification<br/>incident within 100 m"]
-    telegram["Telegram @HowlZaBot"]
-    supa --> verify
-    supa --> telegram
+    api["Accounts and service-credit ledger"]
+    verify["Verification<br/>data contributions"]
+    api --> verify
   end
 
   treasury["Treasury reward script<br/>Node.js WDK, treasury seed"]
   chain["Sepolia testnet<br/>USDT"]
   cash["Simulated mobile-money cash-out<br/>labelled, no live payout"]
 
-  ui -->|"Shop account and incident reports"| supa
-  verify -->|"Verified report"| treasury
+  ui -->|"Shop account and data contributions"| api
+  verify -->|"Verified contribution"| treasury
   wdk -->|"Top-up USDT"| chain
   treasury -->|"Micro-reward USDT"| chain
-  chain -->|"Confirmed transaction hash"| supa
-  supa -->|"Credit alert tokens after confirmation"| ui
+  chain -->|"Confirmed transaction hash"| api
+  api -->|"Credit service credits after confirmation"| ui
   ui -.->|"Demo only"| cash
 ```
 
@@ -48,17 +48,16 @@ flowchart TB
 
 | Piece | Where it lives | Role |
 | --- | --- | --- |
-| Shop phone | `app/` | Shows the bundle, the rand and USDT amounts, the fee, and the network. Approve and cancel live here. The recovery phrase is never shown. |
+| Shop phone | `app/` | Shows the credit pack, the rand and USDT amounts, the fee, and the network. Approve and cancel live here. The recovery phrase is never shown. |
 | WDK wallet | `scripts/wallet.ts` today; on-device worklet later | Derives the shop address, quotes a USDT transfer, signs it, and reads the receipt. |
-| Howl backend | Existing Supabase project, not this repo | Shop login, incident reports, verification, and the alert-token ledger. |
-| Telegram `@HowlZaBot` | Existing Howl bot | Sends the alerts a shop spends tokens on. |
-| Treasury reward script | Same CLI, opened with the treasury seed | Pays a small USDT reward after Howl marks a report verified. |
+| Partner platform backend | Outside this repo | Shop account, data contributions, verification, and the service-credit ledger. |
+| Treasury reward script | Same CLI, opened with the treasury seed | Pays a small USDT reward after the partner marks a contribution verified. |
 | Sepolia USDT | Chain id 11155111 | Testnet only. Default contract `0x7169D38820dfd117C3FA1f22a697dBA58d90BA06` (Test Tether USD). |
 | Mobile-money cash-out | `app/` cash-out tab | Simulated and labelled. No provider is called and no USDT moves. |
 
-A shop report is only eligible when it is made within 100 metres of the incident. That rule stays in Howl's verification step. This repo does not reimplement it.
+A contribution is eligible only when the partner verifies it. Examples are an incident report or a price. This repo does not decide what counts.
 
-Alert-token prices are the ones Howl already sells: R20 = 10, R40 = 20, R80 = 50, R150 = 100, R300 = 220. The USDT amount is `rand / ZAR_PER_USDT`, rounded up to the next base unit (6 decimals). The checkpoint rate is the Frankfurter snapshot from 11 Nov 2026, 16.5639 rand per US dollar, with 1 USDT treated as 1 USD. It is not a live quote.
+The demo credit packs are R20 = 10, R40 = 20, R80 = 50, R150 = 100, and R300 = 220 credits. The USDT amount is `rand / ZAR_PER_USDT`, rounded up to the next base unit (6 decimals). The checkpoint rate is the Frankfurter snapshot from 11 Nov 2026, 16.5639 rand per US dollar, with 1 USDT treated as 1 USD. It is not a live quote. A partner can replace the catalog.
 
 ## Tether payment steps
 
@@ -70,24 +69,24 @@ Every USDT movement in this design follows Tether's payment flow:
 4. Sign and submit.
 5. Read the receipt. Stay pending until the transfer is confirmed.
 
-Reconnect is part of step 5. The app or the script keeps the transaction hash. When the signal returns, it calls `getTransaction` on that same hash. It does not build a second transfer for the same top-up or the same reward. Alert tokens are credited only when finality is `confirmed` or `final` and `success` is true. A reverted or dropped hash does not credit tokens.
+Reconnect is part of step 5. The app or the script keeps the transaction hash. When the signal returns, it calls `getTransaction` on that same hash. It does not build a second transfer for the same top-up or the same reward. Service credits are recorded only when finality is `confirmed` or `final` and `success` is true. A reverted or dropped hash does not record credits.
 
 `scripts/wallet.ts` implements that flow on Sepolia. `quote` stops after step 3. `send` signs only with `--approve` or the word `approve` typed at a terminal. With no choice, it cancels. `status --hash` is the re-check.
 
-## (a) USDT token top-up
+## (a) USDT credit top-up
 
-The shop picks a bundle in the app. The app shows the token count, the rand price, the USDT amount, and the network. The wallet script then runs the five steps against the Howl treasury address. Howl's Supabase ledger credits alert tokens only after the receipt is confirmed. This repo does not write that ledger.
+The shop picks a credit pack in the app. The app shows the credit count, the rand price, the USDT amount, and the network. The wallet script then runs the five steps against the platform treasury address. The partner ledger records service credits only after the receipt is confirmed. This repo does not write that ledger.
 
 ```mermaid
 sequenceDiagram
   actor Shop
-  participant App as Wallet app
+  participant App as HowlPay
   participant WDK as Tether WDK
   participant Chain as Sepolia USDT
-  participant Howl as Howl Supabase
+  participant Partner as Partner platform
 
-  Shop->>App: Choose an alert-token bundle
-  App->>App: Show tokens, rand, USDT, and network
+  Shop->>App: Choose a service-credit pack
+  App->>App: Show credits, rand, USDT, and network
   Note over App,WDK: 1. Validate address, network, and token
   App->>WDK: Check treasury address, Sepolia chain id, USDT contract
   Note over WDK,Chain: 2. Check balance and fee quote
@@ -100,7 +99,7 @@ sequenceDiagram
   else Shop approves
     Shop->>App: Approve
     Note over App,Chain: 4. Sign and submit
-    App->>WDK: transfer USDT to the Howl treasury
+    App->>WDK: transfer USDT to the platform treasury
     WDK->>Chain: Signed transfer
     Chain-->>App: Transaction hash
     Note over App,Chain: 5. Receipt stays pending until confirmed
@@ -108,30 +107,30 @@ sequenceDiagram
     WDK->>Chain: Lookup
     Chain-->>App: Pending, then confirmed
     Note over App,Chain: Reconnect re-checks this same hash and does not pay twice
-    App->>Howl: Credit alert tokens only after confirmation
-    Howl-->>Shop: Alert-token balance updated
+    App->>Partner: Record service credits only after confirmation
+    Partner-->>Shop: Credit balance updated
   end
 ```
 
 If the phone drops offline after submit, the last screen keeps the hash and the last finality it saw. On reconnect the app asks WDK for that hash again. A missing receipt means "not seen yet", not "send it again".
 
-## (b) Verified-report reward
+## (b) Verified-data reward
 
-The shop files an incident in Howl, inside the 100 metre rule. Howl verifies it. The treasury script, using the treasury seed, pays the shop's USDT address. The shop wallet does not sign this transfer. The treasury does. The same five steps apply, and the same hash is re-checked after a dropped connection.
+The shop submits a data contribution through the partner, for example an incident report or a price. The partner verifies it. The treasury script, using the treasury seed, pays the shop's USDT address. The shop wallet does not sign this transfer. The treasury does. The same five steps apply, and the same hash is re-checked after a dropped connection.
 
 ```mermaid
 sequenceDiagram
   actor Shop
-  participant App as Wallet app
-  participant Howl as Howl Supabase
+  participant App as HowlPay
+  participant Partner as Partner platform
   participant Ver as Verification
   participant Treasury as Treasury WDK script
   participant Chain as Sepolia USDT
 
-  Shop->>App: Report an incident within 100 m
-  App->>Howl: Store the report
-  Howl->>Ver: Review the report
-  Ver-->>Treasury: Verified report and the shop USDT address
+  Shop->>App: Submit a data contribution
+  App->>Partner: Store the contribution
+  Partner->>Ver: Review it
+  Ver-->>Treasury: Verified contribution and the shop USDT address
   Note over Treasury,Chain: 1. Validate address, network, and token
   Treasury->>Treasury: Check shop address, Sepolia, USDT contract
   Note over Treasury,Chain: 2. Check treasury balance and fee quote
@@ -139,22 +138,22 @@ sequenceDiagram
   Chain-->>Treasury: Balances and fee
   Note over Treasury: 3. Show recipient, amount, fee, and network
   alt Policy cancels
-    Treasury-->>Howl: No payout
+    Treasury-->>Partner: No payout
   else Policy approves
     Note over Treasury,Chain: 4. Sign and submit
     Treasury->>Chain: USDT micro-reward to the shop
     Chain-->>Treasury: Transaction hash
-    Treasury->>Howl: Store the hash as pending
+    Treasury->>Partner: Store the hash as pending
     Note over Treasury,Chain: 5. Receipt stays pending until confirmed
     Treasury->>Chain: getTransaction of this same hash
     Chain-->>Treasury: Pending, then confirmed
     Note over Treasury,Chain: Reconnect re-checks this same hash and does not pay twice
-    Howl-->>App: Reward status
+    Partner-->>App: Reward status
     App-->>Shop: Last-known status, then the confirmed amount
   end
 ```
 
-There is no separate long-running reward server in this checkpoint. The treasury path is `scripts/wallet.ts send` opened with the treasury seed. A service that listens for verified reports and calls that flow is still to build. Until it exists, nothing in this repo pays a reward on its own.
+There is no separate long-running reward server in this checkpoint. The treasury path is `scripts/wallet.ts send` opened with the treasury seed. A service that listens for verified contributions and calls that flow is still to build. Until it exists, nothing in this repo pays a reward on its own.
 
 ## Cash-out
 
@@ -162,4 +161,4 @@ Cash-out to mobile money is a labelled simulation in the app. It does not quote 
 
 ## Next
 
-The next product step is an unrest relief pool. Member shops would deposit USDT into a shared pool and receive an automatic payout when Howl verifies an incident near them. That pool should use the same validate, quote, approve, submit, and re-check flow, with the pool wallet as the payer.
+The next product step is a community relief pool. Member shops would deposit USDT into a shared pool and receive an automatic payout when a nearby incident is verified. That pool should use the same validate, quote, approve, submit, and re-check flow, with the pool wallet as the payer.

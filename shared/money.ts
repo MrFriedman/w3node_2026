@@ -1,23 +1,23 @@
 import { USDT_DECIMALS } from './network.ts'
 
-export type AlertBundle = {
+export type CreditPack = {
   id: string
   zar: number
-  tokens: number
+  credits: number
 }
 
-/** Shop prices already used by Howl. USDT is derived from the checkpoint FX rate. */
-export const ALERT_BUNDLES: readonly AlertBundle[] = [
-  { id: 'r20', zar: 20, tokens: 10 },
-  { id: 'r40', zar: 40, tokens: 20 },
-  { id: 'r80', zar: 80, tokens: 50 },
-  { id: 'r150', zar: 150, tokens: 100 },
-  { id: 'r300', zar: 300, tokens: 220 },
+/** Demo service-credit packs. A partner platform can replace this catalog. */
+export const CREDIT_PACKS: readonly CreditPack[] = [
+  { id: 'r20', zar: 20, credits: 10 },
+  { id: 'r40', zar: 40, credits: 20 },
+  { id: 'r80', zar: 80, credits: 50 },
+  { id: 'r150', zar: 150, credits: 100 },
+  { id: 'r300', zar: 300, credits: 220 },
 ]
 
-export function bundleById(id: string): AlertBundle | undefined {
+export function bundleById(id: string): CreditPack | undefined {
   const key = id.trim().toLowerCase()
-  return ALERT_BUNDLES.find((bundle) => bundle.id === key)
+  return CREDIT_PACKS.find((bundle) => bundle.id === key)
 }
 
 /**

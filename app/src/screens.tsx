@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
-import { ALERT_BUNDLES, formatUnits, isTxHash, parseTokenAmount, usdtBaseUnitsForZar } from '../../shared/money.ts'
+import { CREDIT_PACKS, formatUnits, isTxHash, parseTokenAmount, usdtBaseUnitsForZar } from '../../shared/money.ts'
 import {
   CHECKPOINT_FX_NOTE,
   CHECKPOINT_ZAR_PER_USDT,
@@ -16,7 +16,7 @@ export function WalletScreen() {
   return (
     <View style={styles.stack}>
       <Title>Shop wallet</Title>
-      <Body>A self-custodial Sepolia USDT wallet linked to the shop’s Howl account. The address can be shared. The recovery phrase stays private.</Body>
+      <Body>A self-custodial Sepolia USDT wallet a partner platform can open for a shop. The address can be shared. The recovery phrase stays private.</Body>
       <Card>
         <Text style={styles.label}>Network</Text>
         <Body>{`${SEPOLIA_NAME} · chain id ${SEPOLIA_CHAIN_ID}`}</Body>
@@ -29,21 +29,21 @@ export function WalletScreen() {
           ? 'On-device signing is on.'
           : 'On-device signing is not wired. This screen does not read a seed and does not show a balance. Run scripts/wallet.ts address and balance for the testnet wallet.'}
       </Banner>
-      <Muted>TODO: link the derived address to the shop row in Howl’s Supabase auth, and show that address here from the WDK worklet.</Muted>
+      <Muted>TODO: hand the derived address to the partner platform, and show that address here from the WDK worklet.</Muted>
     </View>
   )
 }
 
 export function TopUpScreen() {
   const [bundleId, setBundleId] = useState<string | null>(null)
-  const selected = ALERT_BUNDLES.find((bundle) => bundle.id === bundleId)
+  const selected = CREDIT_PACKS.find((bundle) => bundle.id === bundleId)
 
   return (
     <View style={styles.stack}>
-      <Title>Top up alert tokens</Title>
-      <Body>Pick the same bundles Howl already sells. USDT is the checkpoint FX snapshot, rounded up so the quote is never short.</Body>
+      <Title>Top up service credits</Title>
+      <Body>Example credit packs for a pay-as-you-go service. USDT is the checkpoint FX snapshot, rounded up so the quote is never short.</Body>
       <Muted>{CHECKPOINT_FX_NOTE}</Muted>
-      {ALERT_BUNDLES.map((bundle) => {
+      {CREDIT_PACKS.map((bundle) => {
         const units = usdtBaseUnitsForZar(bundle.zar, CHECKPOINT_ZAR_PER_USDT)
         const active = bundle.id === bundleId
         return (
@@ -54,7 +54,7 @@ export function TopUpScreen() {
             onPress={() => setBundleId(bundle.id)}
             style={[styles.bundle, active ? styles.bundleOn : null]}
           >
-            <Text style={styles.bundleTitle}>{`${bundle.tokens} alert tokens`}</Text>
+            <Text style={styles.bundleTitle}>{`${bundle.credits} service credits`}</Text>
             <Text style={styles.bundleMeta}>{`R${bundle.zar} · ${formatUnits(units, 6)} USDT`}</Text>
           </Pressable>
         )
@@ -62,11 +62,11 @@ export function TopUpScreen() {
       {selected ? (
         <Card>
           <Text style={styles.label}>Review</Text>
-          <Body>{`${selected.tokens} tokens for R${selected.zar}`}</Body>
-          <Body>{`${formatUnits(usdtBaseUnitsForZar(selected.zar, CHECKPOINT_ZAR_PER_USDT), 6)} USDT to the Howl treasury`}</Body>
+          <Body>{`${selected.credits} credits for R${selected.zar}`}</Body>
+          <Body>{`${formatUnits(usdtBaseUnitsForZar(selected.zar, CHECKPOINT_ZAR_PER_USDT), 6)} USDT to the platform treasury`}</Body>
           <Body>{`Network: ${SEPOLIA_NAME}`}</Body>
           <Muted>Fee: quoted by WDK when the script runs. This screen does not invent a fee.</Muted>
-          <Muted>Recipient: HOWL_TREASURY_ADDRESS from the repo-root .env. It is not hardcoded here.</Muted>
+          <Muted>Recipient: PLATFORM_TREASURY_ADDRESS from the repo-root .env. It is not hardcoded here.</Muted>
           <Button label="Approve — signing is in the wallet script" onPress={() => undefined} disabled />
           <Button label="Cancel" kind="ghost" onPress={() => setBundleId(null)} />
           <Muted>TODO: enable Approve only after the Sepolia worklet can sign. Until then, run npm run wallet -- quote --bundle {selected.id} and, once funded, send --bundle {selected.id} --approve.</Muted>
@@ -79,8 +79,8 @@ export function TopUpScreen() {
 export function RewardsScreen() {
   return (
     <View style={styles.stack}>
-      <Title>Verified-report rewards</Title>
-      <Body>When Howl verifies a report made within 100 metres, the treasury wallet sends a small USDT reward to the shop. The shop does not sign that transfer.</Body>
+      <Title>Verified-data rewards</Title>
+      <Body>When a partner verifies a shop’s data contribution, such as an incident report or a price, the treasury wallet sends a small USDT reward. The shop does not sign that transfer.</Body>
       <Card>
         <Body>1. Validate the shop address, Sepolia, and the USDT contract.</Body>
         <Body>2. Check the treasury balance and quote the fee.</Body>
@@ -89,7 +89,7 @@ export function RewardsScreen() {
         <Body>5. Stay pending until the same hash is confirmed. Reconnect checks that hash again.</Body>
       </Card>
       <Banner tone="mint">No rewards in this build. Nothing here pays a shop on its own.</Banner>
-      <Muted>TODO: call the wallet script when Supabase marks a report verified. The CLI path is send, opened with the treasury seed.</Muted>
+      <Muted>TODO: call the wallet script when the partner platform marks a contribution verified. The CLI path is send, opened with the treasury seed.</Muted>
     </View>
   )
 }

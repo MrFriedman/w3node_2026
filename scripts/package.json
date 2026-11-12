@@ -1,5 +1,5 @@
 {
-  "name": "howl-wallet-scripts",
+  "name": "howlpay-scripts",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "wallet": "node wallet.ts",
-    "test": "node --test test/howl.test.ts",
+    "test": "node --test test/howlpay.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
