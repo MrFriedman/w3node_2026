@@ -8,47 +8,41 @@ date: 2026-11-13
 
 # Demo script
 
-Three minutes, preferably 1–2. One shop, one approved claim, one treasury payout from review to a shared receipt, one re-check after a dropped signal. Label every simulated part.
+Three minutes, preferably 1–2. One shop, one private claim pack, one escrowed payout from human approval to a shared receipt, one re-check. Label every simulated part.
 
 Build against [[V1 Build Spec]]. Wallets and hashes: [[Testnet]]. Do not show a seed, a `.env` file, or a mainnet network. Do not name a specific partner product; say "an existing verified incident-alert feed for Cape Town small shops (partner)".
 
-Suggested recording (Cmd+Shift+5): the claim pack and insurer approve in Expo, `npm test` in `scripts/`, a treasury → shop `quote` or `send` plus `status --hash`, the shared receipt, the labelled simulated rand payout.
+Suggested recording (Cmd+Shift+5): the private pack and pack hash in Expo, `openClaim`, insurer approve, `approveAndRelease`, the receipt read from contract events plus Etherscan, the labelled simulated rand payout. If the 17:00 fallback is in force, show the tested contract first, then a direct treasury → shop send, and say so.
 
 ## 0:00 — Who
 
-"This is a spaza owner. After a riot, theft, or fire they need a claim paid, and they need one receipt they and the insurer can both check. They may not have a card or a smooth claims process."
+"This is a spaza owner, and behind them an insurer that sells cover to small shops. After a riot, theft, or fire they need a complete claim, less admin, and one receipt both sides can check."
 
-## 0:20 — The claim pack
+## 0:20 — The private pack
 
-Open HowlPay. Show the pack: the verified-alert card, photos, invoices, the pack hash, and R200 / USDT. Read the source as "an existing verified incident-alert feed for Cape Town small shops (partner)".
+Open HowlPay. Show the pack: the verified-alert card, photos, invoices, the pack hash, and R200 / USDT. Say the private pack is the source of truth, and only the hash goes on-chain. Read the source as "an existing verified incident-alert feed for Cape Town small shops (partner)".
 
-## 0:45 — Insurer approves
+## 0:45 — Open and approve
 
-Switch to the insurer role. Approve the amount (or show Cancel/Reject first: nothing is signed). A human makes this decision. Then show the payment review: shop address, USDT, rand, fee, Sepolia.
+Show `openClaim`. Switch to the insurer role. A human reviews the pack and approves (or show reject first: no payout). Then the five-step payment review: payee, USDT, rand, fee, Sepolia.
 
-## 1:10 — The payout
+## 1:15 — Release and receipt
 
-From `scripts/`, with the treasury wallet already loaded by the operator:
+Show `approveAndRelease`. Read the events: opened, approved, paid. That is the shared receipt, with the Etherscan link. The contract released a pre-funded float; it did not decide the claim.
 
-```bash
-npm test
-npm run wallet -- quote --to 0x55306B77Fb0A34f1253F3c78Ac734a9dBC5FFfab --usdt <amount>
-npm run wallet -- send --to 0x55306B77Fb0A34f1253F3c78Ac734a9dBC5FFfab --usdt <amount> --approve --wait
-```
-
-Read recipient, amount, fee, and network, then the hash and confirmed. That is the shared receipt. If a new send is not possible in time, re-check a known Sepolia hash and say clearly whether it is this payout or the earlier R20 top-up.
+If the contract path is not live, say you are using the fallback: a direct treasury transfer, and show the tested contract separately.
 
 ## 1:50 — Recovery
 
-Take that hash. Turn the story to a dropped signal: both sides still have one hash. Run `status --hash` again, or trigger reconnect in the app. Say you are not sending a second payment. Pending stays pending. Confirmed stays confirmed.
+Take that tx / claim id. Turn the story to a dropped signal: both sides still have one receipt. Re-read the claim state or `status --hash`. Say you are not paying again. The contract will not double-pay.
 
 ## 2:20 — Simulated rand payout
 
-Show the labelled simulation and the `SIM-` reference, "via licensed partner". "No extra USDT moved. No bank or mobile-money payout was sent."
+Show the labelled simulation and the `SIM-` reference, "via licensed partner". "The shop sees rand. They did not have to hold USDT. No bank or mobile-money payout was sent in this demo."
 
 ## 2:45 — Close
 
-"The insurer decided. The float paid. Both sides can re-check the same receipt. A live off-ramp and a real claims backend are not in this demo."
+"The pack is private. The contract holds the obligation. A human approved, then the float paid, and both sides can re-check the same receipt."
 
 ## Superseded: 12 Nov credit-and-reward script
 

@@ -6,7 +6,9 @@ Context for anyone working in this repo, including Codex. Deeper working notes l
 
 HowlPay is a USDT wallet and payments layer on Tether WDK, built for the W3Node Node Engine hackathon (Cape Town, 12–14 Nov 2026), Mobile Money & Peer-to-Peer track sponsored by Tether.
 
-**V1 is frozen (13 Nov 2026):** a verified claim pack plus a tracked payout for spaza micro-insurance. A shop has a claim pack after a riot, theft, or fire. A human insurer (or embedded insurance platform) approves the amount. HowlPay pays that amount from a pre-funded USDT treasury float on Sepolia. Both sides see the same receipt (tx hash, amount in rand, status). Rand cash-out is a labelled simulation. The incident source is described as "an existing verified incident-alert feed for Cape Town small shops (partner)".
+**V1 is frozen (13 Nov 2026, refined later that morning):** HowlPay is the single source of truth for the claims process. A private incident record plus recovery pack stays off-chain. A Sepolia escrow contract (`contracts/ClaimEscrow.sol`) records each step and holds then releases the USDT payout once a human insurer approves. The buyers are embedded micro-insurance platforms and insurers selling to spazas and SMEs. Spazas are the beachhead; other SMEs and businesses are the expansion story. The main selling point is less claims-handling overhead and admin (a hypothesis to validate, not a measured fact), plus faster, complete claims with one shared receipt. The incident source is described as "an existing verified incident-alert feed for Cape Town small shops (partner)". The rand cash-out is a labelled simulation. The shop does not have to hold USDT.
+
+If the contract is not deployed and callable by about **17:00 SAST**, the demo falls back to a direct treasury → shop transfer with `scripts/wallet.ts`, and still shows the tested contract.
 
 Earlier checkpoint work (service-credit top-ups and data-contribution rewards) is still in the repo and is proven on Sepolia. It is not the v1 demo path.
 
@@ -18,6 +20,7 @@ Judging is 90 points: Product 30, Technical 30, Business 30. A local-only demo c
 
 ```
 app/                  Expo SDK 58 UI. Typechecks. On-device Approve is still disabled.
+contracts/            V1 ClaimEscrow (to be added). Sepolia only. Existing test USD₮.
 docs/architecture.md  Earlier architecture (top-up and reward sequences)
 docs/architecture.png Diagram
 scripts/wallet.ts     Sepolia WDK wallet CLI: address, balance, quote, send, status
@@ -51,7 +54,9 @@ This machine's `.env` is already pointed at:
 
 Shop test wallet: `0x55306B77Fb0A34f1253F3c78Ac734a9dBC5FFfab`. Live addresses, balances, and transaction hashes: `w3node_vault/03 Build/Testnet.md`.
 
-Treasury balances last checked on chain at 22:16 SAST, Thu 12 Nov 2026: **0.02 ETH** and **201.207446 USD₮**. Re-check before a live payout.
+The shop wallet is the contract deployer (about 0.03 Sepolia ETH at the 12 Nov 22:16 SAST check). Re-check before deploy. Treasury balances at that check: **0.02 ETH** and **201.207446 USD₮**, used only for the 17:00 direct-transfer fallback.
+
+Contract tooling is Foundry or Hardhat, whichever is quicker on Node 22. Prefer Foundry if it is present or installs cleanly.
 
 ## Commands
 
@@ -69,7 +74,7 @@ npm run wallet -- send --bundle r20 --cancel
 npm run wallet -- status --hash 0x...
 ```
 
-`--bundle` pays `PLATFORM_TREASURY_ADDRESS` unless `--to` is set. For the v1 claim payout, use `--to` with the shop address (treasury is the sender). `send` signs only with `--approve` (or the word `approve` typed in a terminal). Blank or `--cancel` writes nothing. `--wait` waits for confirmation. `status` only reads a hash; it never sends.
+`--bundle` pays `PLATFORM_TREASURY_ADDRESS` unless `--to` is set. The v1 *fallback* payout uses `--to` with the shop address and the treasury as the sender. The preferred v1 path is the escrow contract (deposit, openClaim, approveAndRelease). `send` signs only with `--approve` (or the word `approve` typed in a terminal). Blank or `--cancel` writes nothing. `--wait` waits for confirmation. `status` only reads a hash; it never sends.
 
 A confirmed R20 top-up (shop → treasury) already exists as fallback evidence. Re-check it instead of sending again unless you mean to spend. Do not present it as the v1 claim payout.
 
@@ -96,7 +101,7 @@ Every USDT movement follows Tether's five steps:
 4. Sign and submit.
 5. Read the receipt and stay pending until confirmed.
 
-Reconnect repeats step 5 on the same hash. A second `send` is a second payment.
+Reconnect repeats step 5 on the same hash. A second `send` or a second `approveAndRelease` is a second payment (the contract must revert a double pay).
 
 ## Conventions
 
@@ -106,21 +111,23 @@ Reconnect repeats step 5 on the same hash. A second `send` is a second payment.
 - Rename the product only in `shared/brand.ts`, then match `app/app.json` and the docs.
 - Disclose reused third-party code. Only work since 3 Nov 2026 counts for the hackathon.
 - **Public naming stays neutral.** Describe the incident source as "an existing verified incident-alert feed for Cape Town small shops (partner)". Do not name a specific partner product, website, bot handle, or township in code, docs, commits, the pitch, or the video. HowlPay is fine.
-- Prefer updating `w3node_vault/` notes when the build state changes, especially `03 Build/Build Log.md`, `03 Build/Tasks.md`, and `03 Build/Testnet.md`.
+- Prefer updating `w3node_vault/` notes when the build state changes, especially `03 Build/Build Log.md`, `03 Build/Tasks.md`, and `03 Build/Testnet.md`. After a contract deploy, append the address and tx hash to Testnet.md; do not otherwise rewrite that file.
 
-## Current state (Fri 13 Nov 2026, ~09:30 SAST)
+## Current state (Fri 13 Nov 2026, ~09:45 SAST)
 
-- PR #1 is merged. The repo is public. V1 product direction is frozen; see `w3node_vault/02 Product/V1 Build Spec.md`.
+- PR #1 is merged. The repo is public. V1 product direction is frozen and refined; see `w3node_vault/02 Product/V1 Build Spec.md`.
 - Local setup is done: Node 22, installs, five tests, and both typechecks pass.
 - A live R20 top-up confirmed on Sepolia in block 12118349: `0x946a27d941c971b01ff40951b4c7f30f57c650c556a8e0786c1b41f36db4a918`.
 - Treasury funded on Sepolia at 22:16 SAST, 12 Nov: 0.02 ETH (`0xd06514d9944eae05e2583099f27957394ceb802efb8ec8584d8c2b13f31801bd`) and 200 USD₮ (`0x8e60bd1716f6b7aee107fac8584218bacbd49f12025a0622ebcff124247c46f6`). After that fund it held 0.02 ETH and 201.207446 USD₮.
-- Expo on-device Approve is still disabled. Cash-out / rand payout is still simulated.
+- The shop wallet is the intended contract deployer. Expo on-device Approve is still disabled. Cash-out / rand payout is still simulated. `ClaimEscrow` is specified, not yet written.
 - Final submission is **Fri 13 Nov 2026, 23:59 SAST**. Pitch is **Sat 14 Nov**, 5 minutes plus 3 minutes of Q&A, 2–3 slides.
 
 ## Prioritised next tasks
 
-1. **Build v1 from `w3node_vault/02 Product/V1 Build Spec.md`.** Claim pack, insurer approve, five-step treasury → shop payout, shared receipt, simulated rand. About 8 hours. Sepolia only. Seeds stay off the screen and out of git.
-2. Record a demo video of at most 3 minutes from `w3node_vault/05 Pitch/Demo Script.md` (the v1 section). Do not fake a receipt.
+Follow the task order in `w3node_vault/02 Product/V1 Build Spec.md`. In short:
+
+1. **Build v1**, starting with `ClaimEscrow` (tests, Sepolia deploy, then scripts and Expo screens). About a day's work, with a **17:00 SAST** contract gate. Sepolia only. Seeds stay off the screen and out of git.
+2. Record a demo video of at most 3 minutes from `w3node_vault/05 Pitch/Demo Script.md`. Do not fake a receipt.
 3. 2–3 slides from `w3node_vault/05 Pitch/Pitch Outline.md`.
 4. Final BuilderBase packet by Fri 13 Nov 23:59 SAST: title, public repo, video.
 5. Leave honest gaps for later: on-device signing, a real claims backend, a live off-ramp, persist the hash across an app restart, recovery-fund payouts.
@@ -129,7 +136,7 @@ Reconnect repeats step 5 on the same hash. A second `send` is a second payment.
 
 - Sepolia testnet only. Do not add mainnet networks, mainnet RPCs, or mainnet token contracts. The wallet script must keep refusing any chain id other than `11155111`.
 - Never commit, print, or log seed phrases, private keys, or the contents of `.env` or `.env.treasury`.
-- Never read `.env.treasury`. Do not open it in an editor, `cat` it, or dump it into tool output. If a live treasury payout needs that wallet, stop and ask Dylan to load it.
+- Never read `.env.treasury`. Do not open it in an editor, `cat` it, or dump it into tool output. If a live treasury fallback payout needs that wallet, stop and ask Dylan to load it. The contract demo should use the shop key from `.env` through the existing loader, and must never print it.
 - Do not commit `.env`, `.env.treasury`, or any file that contains a seed.
 - Do not show a seed or a filled-in env file in the UI, the video, or a screenshot.
 - Do not read, edit, or commit `w3node_vault/_private/` or touch `w3node_vault/.claudian/`.

@@ -38,3 +38,7 @@ date: 2026-11-13
 - [[AGENTS.md]] now points Codex at the v1 spec and restates hard rules (testnet only, no secrets, do not read `.env.treasury`, do not touch `.claudian/` or `_private/`).
 - Validation calls continue in parallel ([[Validation Plan]]). They may change Saturday pitch emphasis, not the v1 demo mid-build.
 
+## 2026-11-13, later morning (~09:45 SAST)
+
+- Positioning refined: HowlPay is the single source of truth for the claims process (private pack off-chain, escrow contract on-chain). Buyers are embedded micro-insurance platforms and insurers. Spazas are the beachhead; SMEs and businesses in general are the expansion story. Overhead reduction is a hypothesis to validate on today's calls.
+- V1 now includes `contracts/ClaimEscrow.sol` on Sepolia: insurer deposits a USD₮ float, platform opens a claim with only the pack hash, insurer `approveAndRelease` or `reject`. Shared receipt reads events. 17:00 SAST fallback remains a direct treasury transfer. Details in [[V1 Build Spec]].
