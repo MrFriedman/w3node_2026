@@ -1,9 +1,5 @@
 import readline from 'node:readline/promises'
 import { stdin as input, stdout as output } from 'node:process'
-import dotenv from 'dotenv'
-import { fileURLToPath } from 'node:url'
-import WDK from '@tetherto/wdk'
-import WalletManagerEvm from '@tetherto/wdk-wallet-evm'
 import { resolveApproval } from '../shared/approval.ts'
 import { PRODUCT_NAME } from '../shared/brand.ts'
 import {
@@ -18,43 +14,11 @@ import {
 import {
   CHECKPOINT_FX_NOTE,
   CHECKPOINT_ZAR_PER_USDT,
-  DEFAULT_SEPOLIA_RPC,
-  DEFAULT_SEPOLIA_USDT,
   SEPOLIA_CHAIN_ID,
   SEPOLIA_NAME,
   USDT_DECIMALS,
 } from '../shared/network.ts'
-import { assertSepolia, readToken, type TokenInfo } from './evm.ts'
-
-dotenv.config({
-  path: fileURLToPath(new URL('../.env', import.meta.url)),
-  quiet: true,
-})
-
-type Receipt = {
-  hash: string
-  finality: 'pending' | 'confirmed' | 'final' | 'dropped'
-  success?: boolean
-  block?: number
-  fee?: bigint
-}
-
-type Account = {
-  getAddress(): Promise<string>
-  getBalance(): Promise<bigint>
-  getTokenBalance(tokenAddress: string): Promise<bigint>
-  quoteTransfer(options: { token: string; recipient: string; amount: bigint }): Promise<{ fee: bigint }>
-  transfer(options: { token: string; recipient: string; amount: bigint }): Promise<{ hash: string; fee: bigint }>
-  getTransaction(hash: string): Promise<Receipt>
-  waitForTransaction(hash: string, options?: { target?: 'confirmed' | 'final'; timeout?: number }): Promise<Receipt>
-}
-
-type Session = {
-  wdk: { dispose(): void }
-  account: Account
-  rpcUrl: string
-  token: TokenInfo
-}
+import { openSession, type Session, type Receipt } from './wallet-session.ts'
 
 type Args = {
   command?: string
@@ -115,17 +79,6 @@ function parseArgs(argv: string[]): Args {
   return args
 }
 
-function readSeed(): string {
-  const seed = process.env.WDK_SEED_PHRASE?.trim()
-  if (!seed) {
-    throw new Error('Set WDK_SEED_PHRASE in the repo-root .env. The script does not generate or print a seed.')
-  }
-  if (!WDK.isValidSeed(seed)) {
-    throw new Error('WDK_SEED_PHRASE is not a valid BIP-39 seed. The value was not printed.')
-  }
-  return seed
-}
-
 function fxRate(): { rate: string; note: string } {
   const fromEnv = process.env.ZAR_PER_USDT?.trim()
   if (fromEnv) {
@@ -160,34 +113,6 @@ function paymentFromArgs(args: Args): { bundle?: CreditPack; amount: bigint; rec
     amount: parseTokenAmount(args.usdt, USDT_DECIMALS),
     recipient: args.to,
     rateNote: fx.note,
-  }
-}
-
-async function openSession(): Promise<Session> {
-  const chainOverride = process.env.EVM_CHAIN_ID?.trim()
-  if (chainOverride && chainOverride !== String(SEPOLIA_CHAIN_ID)) {
-    throw new Error(`EVM_CHAIN_ID must be ${SEPOLIA_CHAIN_ID} (${SEPOLIA_NAME}).`)
-  }
-  const seed = readSeed()
-  const rpcUrl = process.env.EVM_RPC_URL?.trim() || DEFAULT_SEPOLIA_RPC
-  const tokenAddress = process.env.EVM_TOKEN_CONTRACT?.trim() || DEFAULT_SEPOLIA_USDT
-  await assertSepolia(rpcUrl)
-  const token = await readToken(rpcUrl, tokenAddress)
-  if (token.decimals !== USDT_DECIMALS) {
-    throw new Error(
-      `Token ${token.address} reports ${token.decimals} decimals. This checkpoint expects 6-decimal testnet USDT.`,
-    )
-  }
-  const wdk = new WDK(seed).registerWallet('ethereum', WalletManagerEvm, {
-    provider: rpcUrl,
-    chainId: SEPOLIA_CHAIN_ID,
-  })
-  try {
-    const account = await wdk.getAccount('ethereum', 0)
-    return { wdk, account: account as Account, rpcUrl, token }
-  } catch (error) {
-    wdk.dispose()
-    throw error
   }
 }
 

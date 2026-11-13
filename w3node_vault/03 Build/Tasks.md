@@ -19,6 +19,15 @@ Ship the final BuilderBase packet by **Fri 13 Nov, 23:59 SAST**. Codex should fo
 
 A confirmed shop→treasury R20 top-up already exists as *fallback* evidence if a new payout cannot be sent in time. Label it honestly as a top-up, not as this claim payout.
 
+## Claims workspace verification (13 Nov)
+
+- [x] Claims/operator-first navigation, inspectable fictional evidence and separate illustrative decision walkthrough.
+- [x] Existing Sepolia escrow receipt verified in the browser; shared state survives tab navigation.
+- [x] Explicit test-token settlement versus simulated rand; technical details and copy controls.
+- [x] Receipt state/error tests and web/iOS/Android bundle checks.
+- [ ] Final 320/390/430px visual pass after the spacing refinement.
+- [ ] Native-device pass: large text, software keyboard, screen reader and safe areas. No simulator tooling available during implementation.
+
 ## Friday submission
 
 - [x] Public GitHub repo: https://github.com/MrFriedman/w3node_2026. README is the HowlPay one. No secrets in git.

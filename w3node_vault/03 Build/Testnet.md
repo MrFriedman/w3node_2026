@@ -45,3 +45,7 @@ npm run wallet -- status --hash 0x946a27d941c971b01ff40951b4c7f30f57c650c556a8e0
 A new `send` is a new payment. Use `--approve --wait` only when you mean to spend again.
 
 The 22:16 SAST fund used `scripts/fund-treasury.ts` (quote first, then `--approve`). It loads the shop seed from `.env` and does not read `.env.treasury`.
+
+- ClaimEscrow deployed on Sepolia at [0x59F1586F0A624CC8b13B7128420B0842aA1AB56d](https://sepolia.etherscan.io/address/0x59F1586F0A624CC8b13B7128420B0842aA1AB56d) in [0x1b40b91c40242e25ccae73aab458a93b91a670043b36ed80c4dfe26a2c728646](https://sepolia.etherscan.io/tx/0x1b40b91c40242e25ccae73aab458a93b91a670043b36ed80c4dfe26a2c728646).
+- Demo claim #1 opened and reserved 12.074452 test USD₮ in [block 12124722](https://sepolia.etherscan.io/tx/0xdb7bc760e7223c93f5e36eb33703e0c6e37a21f3324343f91b8989f132951afb).
+- Demo claim #1 released 12.074452 test USD₮ to the shop in [block 12124728](https://sepolia.etherscan.io/tx/0xbcd5da34f3b3b022601fa8c3996bea009c2ce34ca6f5ff140eac6ced7ee0f185). At the checkpoint FX snapshot this corresponds to R200. Rand delivery is simulated.

@@ -42,3 +42,20 @@ date: 2026-11-13
 
 - Positioning refined: HowlPay is the single source of truth for the claims process (private pack off-chain, escrow contract on-chain). Buyers are embedded micro-insurance platforms and insurers. Spazas are the beachhead; SMEs and businesses in general are the expansion story. Overhead reduction is a hypothesis to validate on today's calls.
 - V1 now includes `contracts/ClaimEscrow.sol` on Sepolia: insurer deposits a USD₮ float, platform opens a claim with only the pack hash, insurer `approveAndRelease` or `reject`. Shared receipt reads events. 17:00 SAST fallback remains a direct treasury transfer. Details in [[V1 Build Spec]].
+
+## 2026-11-13 — Claim escrow
+
+The shop test wallet deployed ClaimEscrow on Sepolia through Tether WDK and acted as owner, claim opener, insurer, and sample payee. The fictional R200 pack reserved 12.074452 test USD₮. The approval released that exact amount back to the shop. See [[Testnet]] for deployment, open, and payout hashes.
+
+The Expo Claim tab loads the sample's events directly from Sepolia. It shows the same receipt for all three demo roles and allows rechecking a submitted hash. Quotes and signing run in the WDK CLI. The demo has no insurer backend and the rand leg is labelled simulated.
+
+
+## 2026-11-13 — Claims workspace redesign
+
+- Replaced the six-tab wallet shell with Claims and Activity, led by the insurer/claims operator. Platform and Shop remain explicitly labelled demo roles in secondary controls. Earlier checkpoint screens remain in source but are no longer primary navigation.
+- Added a fictional case overview, six inspectable evidence entries, an illustrative review/cancel/rejection/signing-handoff walkthrough, and separate test-token settlement and simulated rand delivery. Placeholder attachments are never presented as verified documents. Real signing remains in the WDK CLI.
+- Receipt reads now reconcile events, successful event receipts and contract state at a single block, validate the escrow token, distinguish transaction lookup from claim state, and abort stalled RPC calls after 10 seconds per request. Failed refreshes preserve timestamped receipts with an explicit stale notice. Mined evidence is not labelled finalised.
+- State survives Claims/Activity navigation in memory. Hashes, FX snapshot and token details are expandable; copy controls use Expo Clipboard. This adds no backend, authentication, private storage, new payment or contract change.
+- Verification: app/script typechecks, five existing payment tests, four escrow tests and focused receipt-reader tests. Web/iOS/Android exports succeeded. Browser checks verified live Sepolia settlement, evidence expansion, illustrative cancellation, copy controls, invalid input, rand simulation and state retention across tabs. Inspected 390px and 320px layouts; a final spacing refinement followed.
+- Outstanding visual acceptance: final 430px inspection, final spacing recheck, native-device rendering, large system text, software keyboard, VoiceOver/TalkBack and native safe areas. Browser tools became unavailable before final visual sign-off; iOS simulator tooling (`simctl`) was unavailable. Native bundle success is not native visual verification.
+- Changes remain uncommitted for review. No private vault directories or wallet secrets were read.

@@ -4,13 +4,13 @@ import { CREDIT_PACKS, formatUnits, isTxHash, parseTokenAmount, usdtBaseUnitsFor
 import {
   CHECKPOINT_FX_NOTE,
   CHECKPOINT_ZAR_PER_USDT,
-  DEFAULT_SEPOLIA_USDT,
   SEPOLIA_CHAIN_ID,
   SEPOLIA_NAME,
 } from '../../shared/network.ts'
 import { colors, fonts, radius, spacing, typography } from './theme'
 import { Banner, Body, Button, Card, Muted, Title } from './ui'
 import { ON_DEVICE_SIGNING } from './wdk'
+import { CLAIM_TOKEN } from '../../shared/claims.ts'
 
 export function WalletScreen() {
   return (
@@ -21,8 +21,8 @@ export function WalletScreen() {
         <Text style={styles.label}>Network</Text>
         <Body>{`${SEPOLIA_NAME} · chain id ${SEPOLIA_CHAIN_ID}`}</Body>
         <Text style={styles.label}>Testnet USDT</Text>
-        <Text style={styles.mono}>{DEFAULT_SEPOLIA_USDT}</Text>
-        <Muted>Default contract from Tether’s wdk-examples. The script reads the on-chain name and decimals before it quotes.</Muted>
+        <Text style={styles.mono}>{CLAIM_TOKEN}</Text>
+        <Muted>Pimlico test USD₮ used by the claims escrow. The script reads the on-chain name and decimals before it quotes.</Muted>
       </Card>
       <Banner tone="notice">
         {ON_DEVICE_SIGNING

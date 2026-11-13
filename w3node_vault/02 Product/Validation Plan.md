@@ -109,6 +109,42 @@ If the answer is "nothing", drop USDT from the value claim and keep it as the se
 
 **Then show:** a fictional sample claim pack (incident card + photos + invoices + hash + payout receipt). Offer to **run 3 anonymised historical cases by hand** as a free pilot.
 
+If you are on the phone with a broker, stay with the six questions above. For an underwriting manager (UMA) or insurer claims contact, use the section below.
+
+## Insurer / UMA questions
+
+Use this script with an underwriting manager or insurer claims contact. It goes further than the broker questions above: who owns the file after lodgement, what a real claim actually cost in time, what proof failed, how payout left, and who can say yes to a pilot. Some UMAs write only personal lines, so they may not see spaza or SME books — still ask, then ask who does.
+
+**Opener:**
+> "Hi, I'm Dylan. A Cape Town broker suggested I speak with someone on the claims side at an underwriting manager. I'm a UCT student mapping where property claims lose time after a broker lodges them, especially around evidence, approval and payout, and I wondered if I could take 10 minutes this morning?"
+
+### Claims ownership and process
+1. Once a broker lodged the last claim you closed, who actually owned the file until payment — the underwriting manager, the insurer you underwrite for, the broker, or Sasria if it was a special peril?
+2. After that file was lodged, which steps did your team still run, and which sat with the broker or the insurer?
+
+### Where time and cost go
+Ask about one recent property claim, no names. This is the overhead hypothesis.
+3. On the last property claim you closed, how much staff time did your team spend from lodgement to payment, and where did most of that time go?
+4. The last time a claim arrived incomplete, what was missing, how many times did you have to go back to the broker or the client, and what did that add in time or cost compared with a complete file?
+
+### Evidence and proof of incident
+5. On the last riot, unrest or Sasria claim you handled, how did you confirm the peril happened at that place and time, and what evidence failed or had to be replaced?
+6. Have you ever been given an independent, time-stamped incident record, not just the client's own photos and statement? What did you do with it, and did that file move faster or cleaner than usual?
+
+### Payout and reconciliation
+7. On that last approved claim, how was the client paid, how long after approval did the money leave, and how did you and the broker know it had arrived?
+8. When a payout last went wrong or was delayed after approval, what happened?
+9. After a human has approved a claim, what still has to happen before the money is released? Would a contract that can only release funds after that human approval be acceptable in your process, or has anything like that been blocked before?
+
+### Appetite, pilot and buyer
+10. Would you be willing to run three anonymised historical claims against a complete pack (incident record, photos, invoices, and a payout receipt), so you can compare it with how those files actually went?
+11. Who inside the underwriting manager, or at the insurer behind you, would decide on a trial, and what would they compare it against?
+12. Do you currently write or administer claims for SMEs or micro-insurance, or is your book personal lines? If it is personal lines, who handles SME commercial property claims that you would trust me to call?
+
+**Signals to listen for.** Strong: a real anonymised claim with times and costs; incomplete documents or peril proof that delayed a file; a payout delay or reconciliation gap after approval; a yes to the three-case pilot, or an intro to the person who can approve it. Weak: polite interest; "the process already works"; no real case; "head office would have to decide" with no intro; a personal-lines-only book and no referral on.
+
+**Close:** "Is there someone in claims operations, payouts, or SME commercial property — here or at the insurer you underwrite for — who you could intro me to for 15 minutes on a recent file?"
+
 ## Evidence ladder (log the highest step reached)
 | Level | Signal |
 |---|---|

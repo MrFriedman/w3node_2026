@@ -9,8 +9,16 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "lib": ["ES2022"],
-    "types": ["node"]
+    "lib": [
+      "ES2022"
+    ],
+    "types": [
+      "node"
+    ]
   },
-  "include": ["wallet.ts", "evm.ts", "test/**/*.ts", "../shared/**/*.ts"]
+  "include": [
+    "*.ts",
+    "test/**/*.ts",
+    "../shared/**/*.ts"
+  ]
 }

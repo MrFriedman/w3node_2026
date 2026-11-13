@@ -94,7 +94,7 @@ npm run typecheck
 npx expo start
 ```
 
-`npm run typecheck` is the check this checkpoint runs headless. `expo start` opens the shell in Expo Go. The top-up screen uses the same credit-pack maths as the script. Approve stays disabled there until the on-device WDK worklet exists. Use the script to sign.
+`npm run typecheck` checks the mobile app. `expo start` opens the Claims and Activity workspace in Expo Go. The insurer-led demo includes inspectable fictional evidence, illustrative decision controls, an event-based Sepolia settlement receipt and labelled simulated rand delivery. Signing stays in the CLI. Earlier top-up/reward screens remain in source but are not in the primary navigation. Run `npm run test:receipt` in `scripts/` for receipt verification and failure-state tests.
 
 Sepolia ETH and test USDT come from a faucet. Tether's docs point at the Pimlico and Candide faucets. An empty wallet is a normal result for a new address.
 
@@ -119,6 +119,7 @@ Third-party code and references:
 - [Tether WDK](https://docs.wdk.tether.io) packages `@tetherto/wdk` and `@tetherto/wdk-wallet-evm` (Apache-2.0). The wallet script follows the [Node.js and Bare quickstart](https://docs.wdk.tether.io/start-building/nodejs-bare-quickstart/) and the [ERC-20 transfer guide](https://docs.wdk.tether.io/sdk/wallet-modules/wallet-evm/guides/transfer-tokens/). It is not a copy of that quickstart's multi-chain sample.
 - [Tether WDK React Native starter](https://github.com/tetherto/wdk-starter-react-native) (Apache-2.0) and its [setup guide](https://docs.wdk.tether.io/examples-and-starters/react-native-starter/). That starter is not vendored. It configures mainnet Arbitrum and Polygon as well as Sepolia, and it needs a BareKit worklet this checkpoint does not run. The Expo app is an original shell. The starter is the intended base for on-device signing.
 - [Tether wdk-examples `.env.example`](https://github.com/tetherto/wdk-examples/blob/main/.env.example) for the default Sepolia RPC pattern and the Test Tether USD contract.
+- Expo Clipboard supplies native and web copy controls (MIT, Expo).
 - Expo `blank-typescript` template from `create-expo-app` (SDK 58), including the default icon assets. The Expo template is MIT, copyright 2015–present 650 Industries, Inc.
 - The author’s existing design system supplied the visual tokens and mobile component specifications. Inter and Space Grotesk are distributed under the SIL Open Font License through Expo Google Fonts.
 - Frankfurter (European Central Bank reference rates) for the 11 Nov 2026 USD/ZAR snapshot used as the demo FX rate.

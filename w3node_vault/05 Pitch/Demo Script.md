@@ -53,3 +53,17 @@ To re-check the confirmed shop → treasury top-up:
 `npm run wallet -- status --hash 0x946a27d941c971b01ff40951b4c7f30f57c650c556a8e0786c1b41f36db4a918`
 
 Etherscan: https://sepolia.etherscan.io/tx/0x946a27d941c971b01ff40951b4c7f30f57c650c556a8e0786c1b41f36db4a918
+
+## Record the confirmed escrow walkthrough
+
+The Expo Claim tab is the first screen. Show the fictional pack and switch between Shop, Platform and Insurer. Claim #1 is already paid. Describe opening and approval in past tense, using the two confirmed event receipts below. The CLI prints the R200 and 12.074452 test USD₮ release quote before signing. The original release quote showed a maximum fee of 0.000000000003077034 Sepolia ETH. The sample uses one test wallet for the operator roles and payee.
+
+From `scripts/`:
+
+```sh
+npm run claim -- pack
+npm run claim -- read --hash 0xdb7bc760e7223c93f5e36eb33703e0c6e37a21f3324343f91b8989f132951afb
+npm run claim -- read --hash 0xbcd5da34f3b3b022601fa8c3996bea009c2ce34ca6f5ff140eac6ced7ee0f185
+```
+
+Paste the release hash into Expo and tap **Re-check on Sepolia** twice. Show the same Paid receipt both times, open the Etherscan link, then tap **Simulate rand payout**. Explain that the contract settled test USD₮ and the rand payout screen is a simulation. Close with the business hypothesis that better evidence and one settlement receipt could reduce claims administration.
