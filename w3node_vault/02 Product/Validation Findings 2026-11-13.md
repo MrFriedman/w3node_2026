@@ -37,6 +37,22 @@ A Cape Town short-term broker, written answers on 13 Nov.
 - About 5 days to pay after approval, depending on the claim.
 - Riot claims need proof of political unrest in the area. This is the proof that gets queried or rejected most often.
 
+## Broker C
+
+A Cape Town short-term brokerage, one phone call on 13 Nov, with a principal who handles claims and client work.
+
+- They use the insurer's own claim forms, not a broker form. Some are fillable PDFs; others are not. They keep copies of every insurer's form and send the client the form that matches that insurer.
+- The client fills in the form and gathers the supporting documents, then sends the pack to the broker. The broker can help, but is not allowed to complete the form on the client's behalf. The broker double-checks the pack and sends it on to the insurer, then liaises until repairs are authorised or, on a write-off, the payment is made.
+- Straightforward claims are normally done within a couple of days, depending on the value. If an assessor is required, timing depends on the assessor and the client, and on whether a vehicle is driveable. Assessment can be on site or desktop from photographs. Insurers have cost thresholds above which an assessor has to go out. This is process time, not a clean "days after approval" figure.
+- Form errors happen, but not often, because clients usually phone when they get stuck and the broker talks them through the form. No back-and-forth count or hours-per-file figure was given.
+- They do not run debit orders or hold client money. The insurer collects; the broker handles the correspondence.
+- At renewal they do a market exercise. A policy may sit with one insurer, or be split where specialist cover is needed.
+- Interest in a system that helps fill the insurer's form and track the claim is cautious: it could be useful if it frees up capacity in a small brokerage, but they think that kind of automation probably helps a bigger corporate brokerage more, they are "of the older generation," and the partner who decides will need to see it. Personal connection with the client is a core selling point.
+- A WhatsApp-easy flow fits, because a lot of their clients already use WhatsApp. A chatbot-only path does not: they want to be able to reach an actual person at the brokerage if needed. Combining the assistant with a live handoff is what they said a lot of brokers would actually be interested in.
+- Data security, in line with legislation, was raised unprompted and matters as much as speed.
+- They have had the odd riot or special-risk claim, but they do not deal with that scheme themselves; the insurer does. No comment on proof of unrest, and no confirmed delay.
+- Open to reading a short overview and to looking at a free first version. Willingness to pay was only "possibly," and that "some brokers would definitely pay." No paid pilot. The partner is due back at the start of next week. No SME or spaza book was confirmed.
+
 ## Underwriting manager
 
 A short callback on 13 Nov.
@@ -51,10 +67,13 @@ Outreach is out to the riot-cover state insurer and the brokers' association. No
 
 ## Implications for HowlPay
 
-- Auto-fill the insurer's own forms and add a per-cause document checklist. Do this for claims now. Make the form match the policy (the right number of vehicles, hide irrelevant sections) and flag missing fields and documents before submission. That missing-document check is what cut this brokerage's claims delays. Proposal and onboarding forms were the stronger pain at Broker A, and belong on the roadmap after the claims-form work.
+- Auto-fill the insurer's own forms and add a per-cause document checklist. Do this for claims now. Make the form match the policy (the right number of vehicles, hide irrelevant sections) and flag missing fields and documents before submission. That missing-document check is what cut Broker A's claims delays. Proposal and onboarding forms were the stronger pain at Broker A, and belong on the roadmap after the claims-form work.
+- The client, not the broker, may have to complete the insurer's claim form. At Broker C the broker can help, but is not allowed to fill it in on the client's behalf. Some of those forms are not fillable PDFs. So auto-fill should be a client-facing pre-fill the client reviews and submits, not a broker-completes-and-sends shortcut that some insurers would reject. Real PDF form-filling stays on the roadmap.
 - Keep the insurer's own form and the broker-only portal. Do not replace them with a new client portal those insurers do not want. Information gathering, not typing, is the bottleneck on proposal packs; email remains the client channel.
-- Attach proof of unrest from an existing verified incident-alert feed for Cape Town small shops (partner).
-- Offer a WhatsApp-style assistant for first-time claimants, and for missing-field follow-up, with a human still able to treat frequent and first-time claimants differently.
+- Attach proof of unrest from an existing verified incident-alert feed for Cape Town small shops (partner). Brokers are one step removed from that scheme: the insurer deals with it. Test the evidence gap with the claims owner, not another broker.
+- Offer a WhatsApp-style assistant for first-time claimants, and for missing-field follow-up, with a human still able to treat frequent and first-time claimants differently. A live handoff to a person at the brokerage is a requirement, not a nice-to-have. Small brokerages sell personal touch and will reject a chatbot-only front door. Position this as freeing up capacity, not as big-corporate automation.
+- Data security, in line with legislation, should be visible in the pitch. Do not lead broker conversations with the payout rail or with the underlying settlement technology.
 - Escrow sits with insurers and embedded micro-insurance platforms, not with brokers. Do not lead with escrow when talking to this kind of broker. Lead with complete files, a policy-specific form, and a familiar business chat line. Sell to the claims and operations side, not by asking the old-school broker to change how he works.
 - Paper-file digitisation is a related pain at this kind of office, not V1.
-- Still unvalidated: claims-handling cost at an insurer, riot proof at the claims owner, payout timing, whether there is an SME or commercial book, and a pilot.
+- Two brokerages are now open to reviewing a first version once their decision-makers have been briefed at the start of next week. That is still not a paid pilot.
+- Still unvalidated: claims-handling cost at an insurer, riot proof at the claims owner, payout rails and failed payouts, whether there is an SME or commercial book, and a paid pilot. The only clean post-approval payout figure remains about five days (Broker B). Broker C's "couple of days" is for a straightforward claim through the process, and lengthens when an assessor is required.
