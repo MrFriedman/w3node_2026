@@ -170,6 +170,8 @@ One Cape Town broker, in a qualitative interview on 13 Nov, reported insurer-spe
 
 HowlPay's intended direction is to help prepare information for the receiving insurer's form. The current milestone demonstrates preparation; it does not establish insurer acceptance or provide a production system of record.
 
+Today's redacted validation notes: [[Validation Findings 2026-11-13]].
+
 **Today's scope:**
 1. A shared typed **Generic claim preparation form — demonstration**, with claimant, policy reference, incident type/date/location, description, rand amount and unresolved banking details. Use a separate fictional R200 fixture; preserve the historical settlement pack.
 2. In-app form and indexed supporting-fixture bundle previews, with serialisable JSON. Confirmed assistant and form edits share one session draft and field provenance.
