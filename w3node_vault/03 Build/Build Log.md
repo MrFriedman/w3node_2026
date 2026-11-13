@@ -3,7 +3,7 @@ tags:
   - build
   - log
 status: active
-date: 2026-11-12
+date: 2026-11-13
 ---
 
 # Build log
@@ -30,3 +30,11 @@ date: 2026-11-12
 
 - Conversation with Alan on insurance claims automation and payouts. Notes in [[2026-11-12 Alan - Insurance claims & payouts]]. This is not a build decision.
 - Pivot options now on the table, all as uses of the existing USDT rail, not a rewrite: remittances; stokvel; spaza-wholesaler; gig wages; **insurance claims payouts** (new fifth option). Avalanche could appear in a demo for an immutable claims ledger, but Sepolia and Tether WDK remain the built stack unless that changes.
+
+## 2026-11-13, morning (~09:30 SAST)
+
+- Public naming frozen: stay neutral. Describe the incident source as "an existing verified incident-alert feed for Cape Town small shops (partner)".
+- Product pivot frozen for v1: verified claim pack plus tracked treasury payout on Sepolia, with a labelled simulated rand leg. Source of truth: [[V1 Build Spec]]. [[Concept]] and the old top-up lead in [[User Flows]], [[Demo Script]], and [[Pitch Outline]] are marked superseded as the Friday demo path.
+- [[AGENTS.md]] now points Codex at the v1 spec and restates hard rules (testnet only, no secrets, do not read `.env.treasury`, do not touch `.claudian/` or `_private/`).
+- Validation calls continue in parallel ([[Validation Plan]]). They may change Saturday pitch emphasis, not the v1 demo mid-build.
+

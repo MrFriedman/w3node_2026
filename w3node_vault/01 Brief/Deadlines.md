@@ -3,7 +3,7 @@ tags:
   - brief
   - deadlines
 status: active
-date: 2026-11-12
+date: 2026-11-13
 ---
 
 # Deadlines
@@ -17,9 +17,13 @@ All times SAST.
 | Sat 14 Nov, 09:20–12:55 | Demos |
 | Sat 14 Nov, 14:40 | Awards |
 
-## Today, 12 Nov
+## Thu 12 Nov (checkpoint window, now closed)
 
-[[Project Concept]] and [[Team Status]] are already saved on BuilderBase. [[Technical Foundation]] has the title HowlPay and the public repo. The demo video URL is still empty. That form closes at **21:00 SAST**.
+[[Project Concept]] and [[Team Status]] were saved on BuilderBase. [[Technical Foundation]] has the title HowlPay and the public repo. The demo video URL was still empty when that form closed at **21:00 SAST**.
+
+## Fri 13 Nov
+
+Final BuilderBase packet is due **23:59 SAST**: title, public repo, and a demo video of the frozen v1 claims-payout walkthrough ([[V1 Build Spec]], [[Demo Script]]).
 
 ## Final submission
 

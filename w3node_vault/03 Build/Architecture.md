@@ -3,10 +3,13 @@ tags:
   - build
   - architecture
 status: active
-date: 2026-11-12
+date: 2026-11-13
 ---
 
 # Architecture
+
+Source of truth for the *v1 demo* is [[V1 Build Spec]]. The diagram and sequences below describe the earlier checkpoint (shop top-up and reward payout). V1 reuses the same wallets and five-step flow, but the live payment is **treasury → shop** after a human claim approval, not a service-credit top-up.
+
 
 Source of truth: [docs/architecture.md](../../docs/architecture.md).
 
@@ -16,4 +19,4 @@ Shop phone (HowlPay plus Tether WDK) pays Sepolia USDT to a platform treasury fo
 
 Live Sepolia addresses, balances, and the confirmed R20 top-up are in [[Testnet]]. Sequences for top-up and reward, including approve/cancel and the re-check, are in the architecture doc. Product steps: [[User Flows]].
 
-The phone UI is still a shell. Signing today is `scripts/wallet.ts`. Wiring live balance, approve, pending/confirmed, and reconnect into the Expo app is the next build step ([[Tasks]]).
+The phone UI is still a shell. Signing today is `scripts/wallet.ts`. The next build step is the v1 claims walkthrough in [[V1 Build Spec]] and [[Tasks]], not a live shop top-up on the phone.

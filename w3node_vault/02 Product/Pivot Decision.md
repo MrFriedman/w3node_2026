@@ -3,7 +3,7 @@ tags:
   - product
   - decision
 date: 2026-11-12
-status: recommended, not yet frozen (freeze after Friday calls)
+status: frozen 2026-11-13 for v1 build; public naming stays neutral
 ---
 
 # Pivot Decision
@@ -14,7 +14,7 @@ Written Thu 12 Nov 2026, ~22:00 SAST. It picks up the Codex research thread and 
 
 ## Recommendation (one paragraph)
 
-**Freeze this: "verified claim pack plus tracked payout" for spaza micro-insurance.** A shop owner (or the partner alert platform, for them) builds a claim pack after a riot, theft or fire. It has the time-stamped, human-verified incident record from a verified unrest-alert signal, photos, and stock invoices. The insurer or the embedded insurance platform decides on the claim, and a human approves it. HowlPay then pays the approved amount from a pre-funded USDT float to the shop. Both sides see the same receipt (tx hash, amount in rand, status). Rand goes out through a licensed off-ramp. The **first customer is the embedded micro-insurance distributors that already sell riot cover to spazas** (Vuleka/Hollard, Shop2Shop, Santam's emerging-business product, A2Pay). Commercial brokers come second. **Recovery-fund payouts to uninsured traders are the second channel on the same rail.**
+**Frozen Fri 13 Nov 2026 for v1 build:** "verified claim pack plus tracked payout" for spaza micro-insurance. A shop owner (or the partner alert platform, for them) builds a claim pack after a riot, theft or fire. It has the time-stamped, human-verified incident record from a verified unrest-alert signal, photos, and stock invoices. The insurer or the embedded insurance platform decides on the claim, and a human approves it. HowlPay then pays the approved amount from a pre-funded USDT float to the shop. Both sides see the same receipt (tx hash, amount in rand, status). Rand goes out through a licensed off-ramp. The **first customer is the embedded micro-insurance distributors that already sell riot cover to spazas** (Vuleka/Hollard, Shop2Shop, Santam's emerging-business product, A2Pay). Commercial brokers come second. **Recovery-fund payouts to uninsured traders are the second channel on the same rail.**
 
 ## Where I agree with Codex, and where I'd change it
 
@@ -113,7 +113,7 @@ Why A beats C as the *lead*: C has a strong inclusion story but a weak payer. Go
 
 ## Partner naming
 
-The partner naming decision is kept private.
+**Frozen Fri 13 Nov 2026:** stay neutral in all public and tracked material, including the repo, README, commits, the demo video, and the slides. Describe the source as "an existing verified incident-alert feed for Cape Town small shops (partner)". Do not name a specific partner product, website, bot handle, or township.
 
 ## Freeze for Friday (Fri 13 Nov 23:59 SAST)
 
@@ -143,7 +143,8 @@ The partner naming decision is kept private.
    - Validation log from Friday's calls.
    - Regulatory answer (licensed CASP, trader sees rand).
 
-**Freeze rule after the calls (Fri ~16:00):**
+**Pitch emphasis after the Friday calls (~16:00 SAST):** the v1 *build* is already frozen (option A: claim pack plus tracked payout). Use the table below only to adjust how the Saturday pitch is framed, not to rewrite the demo mid-build.
+
 
 | What the calls show | Freeze |
 |---|---|

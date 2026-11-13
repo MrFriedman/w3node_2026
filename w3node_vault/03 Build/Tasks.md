@@ -3,38 +3,43 @@ tags:
   - build
   - tasks
 status: active
-date: 2026-11-12
+date: 2026-11-13
 ---
 
 # Tasks
 
-Ship the final BuilderBase packet by **Fri 13 Nov, 23:59 SAST**. Checkpoint forms close **today, Thu 12 Nov, 21:00 SAST**. Later items stay honest in the demo. Do not imply they work.
+Ship the final BuilderBase packet by **Fri 13 Nov, 23:59 SAST**. Codex should follow [[V1 Build Spec]]. Later items stay honest in the demo. Do not imply they work.
 
-## Now — Technical Foundation (today 21:00 SAST)
+## Now — v1 claims-payout build (today)
 
-The form already has the title HowlPay and the public repo. The demo video URL is still empty.
+- [ ] **Build v1** from [[V1 Build Spec]]: claim pack, insurer approve/reject, five-step treasury → shop payout on Sepolia, shared receipt with hash re-check, labelled simulated rand. About 8 hours. Sepolia only. Keep seeds out of git and off the screen. Do not open `.env.treasury`. Token, treasury, and balances are in [[Testnet]].
+- [ ] Record a demo video, at most 3 minutes, from the v1 section of [[Demo Script]]. Label every simulated part. Cmd+Shift+5 is enough.
+- [ ] Upload the video to YouTube or Drive, paste the URL into BuilderBase, and submit the final packet (title HowlPay, public repo, video) by **23:59 SAST**. Do not fake a receipt.
 
-- [ ] **Build first:** wire the Expo UI so the video is stronger: live shop balance, a real Approve that signs an R20 top-up through the five-step flow, pending and confirmed states, and a re-check of the same hash on reconnect. Sepolia only. Keep seeds out of git and off the screen. Token and treasury are in [[Testnet]].
-- [ ] Record a demo video, at most 3 minutes, from [[Demo Script]]. One shop, one payment from review to a receipt, one failure and a recovery, simulated cash-out labelled. Cmd+Shift+5 is enough. Suggested shots: the architecture diagram, `npm test`, a live or re-checked transfer, and the Expo app.
-- [ ] Upload the video to YouTube or Drive, paste the URL into [[Technical Foundation]] on BuilderBase, and submit before 21:00 SAST. Do not fake a receipt.
-
-A confirmed hash already exists if the UI work overruns the clock and the video has to show the script path plus a re-check. Do not send a second transfer just for the camera unless you mean to.
+A confirmed shop→treasury R20 top-up already exists as *fallback* evidence if a new treasury→shop payout cannot be sent in time. Label it honestly as a top-up, not as this claim payout.
 
 ## Friday submission
 
 - [x] Public GitHub repo: https://github.com/MrFriedman/w3node_2026. README is the HowlPay one. No secrets in git.
-- [x] Live Sepolia evidence: funded shop wallet and a confirmed R20 top-up. See [[Testnet]].
-- [x] [[Project Concept]] and [[Team Status]] saved on BuilderBase.
+- [x] Live Sepolia evidence: funded shop wallet, funded treasury (0.02 ETH and 201.207446 USD₮ at the 12 Nov 22:16 SAST check), and a confirmed R20 top-up. See [[Testnet]].
+- [x] [[Project Concept]] and [[Team Status]] saved on BuilderBase. Checkpoint forms closed Thu 21:00 SAST.
 - [x] `docs/architecture.png` is in the repo if the form wants a diagram.
-- [ ] 2–3 slides from [[Pitch Outline]].
+- [ ] 2–3 slides from [[Pitch Outline]] (v1 claims-payout outline).
 - [ ] Final BuilderBase packet: title HowlPay, public repo, video link, by **Fri 13 Nov, 23:59 SAST**.
+
+## Superseded as the lead build (12 Nov)
+
+These were the Thursday plan. They are not the v1 demo path.
+
+- [ ] ~~Wire the Expo UI as a live R20 *top-up* (shop → treasury) with on-device signing.~~ Out of scope for v1. Signing stays in `scripts/wallet.ts`. The top-up script path is already proven.
+- [ ] ~~Submit a demo video into Technical Foundation before Thu 21:00 SAST.~~ That checkpoint window has closed. The video is now part of the Friday 23:59 packet.
 
 ## Still open after the video
 
-These are real gaps. Mention them if asked. Do not build them into the Friday story as done.
+Real gaps. Mention them if asked. Do not build them into the Friday story as done.
 
-- [ ] Persist the last transaction hash on the device. The script already re-checks a hash you pass. The Expo wiring above should at least re-check on reconnect while the app stays open.
-- [ ] Record service credits in the partner backend only after a confirmed receipt.
-- [ ] Run the treasury script when the partner marks a contribution verified. Do not open `.env.treasury` in an editor or log it.
-- [ ] Replace the simulated cash-out with a mobile-money partner, still behind approve.
-- [ ] Community relief pool: shops pool USDT and get an automatic payout on a verified incident, same five-step flow.
+- [ ] Persist the last transaction hash on the device.
+- [ ] A real claims or partner backend. This repo does not decide claims.
+- [ ] A live licensed off-ramp to rand. Today's rand leg is simulated.
+- [ ] On-device WDK signing, Sepolia only.
+- [ ] Recovery-fund or relief-pool payouts on the same rail (second channel, not v1).

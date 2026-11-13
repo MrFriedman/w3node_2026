@@ -1,11 +1,14 @@
 ---
 tags:
   - product
-status: active
-date: 2026-11-12
+status: superseded as the lead story
+date: 2026-11-13
 ---
 
 # Concept
+
+> **Superseded as the lead story, 13 Nov 2026.** V1 is a verified claim pack plus a tracked HowlPay payout for spaza micro-insurance. See [[V1 Build Spec]] and [[Pivot Decision]]. The text below is the 12 Nov credit-and-reward framing and is kept for history.
+
 
 ## Problem
 
