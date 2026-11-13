@@ -129,6 +129,8 @@ Keep the existing visual tokens. Add a clear v1 path; old Wallet / Top up / Rewa
 6. **Pending** — one tx hash / claim id, waiting for confirmation.
 7. **Shared receipt** — events, amounts, status, Etherscan, re-check control.
 8. **Simulated rand payout** — labelled, no USDT movement from this step.
+9. **Missing-documents checklist** — required documents for the incident type (riot, theft, or fire), shown before submission.
+10. **Pre-filled insurer claim form** — the generic template filled from the R200 sample pack, plus an indexed supporting-documents bundle.
 
 ## Data model
 
@@ -162,6 +164,24 @@ type OnChainClaim = {
 
 `packHash` on-chain is `bytes32`. Derive it from the UTF-8 SHA-256 of a stable canonical JSON of the pack fields that are not raw binary files, plus fixed placeholder ids for photos and invoices.
 
+## Insurer claim-form compatibility (validation feedback, 13 Nov)
+
+One Cape Town broker, in a qualitative interview on 13 Nov, reported insurer-specific forms and supporting documents, about four follow-ups per file and about five days to pay after approval in their experience. These are interview observations, not industry averages, HowlPay results or service commitments. Riot-related claims require evidence for human assessment of the applicable peril and cover.
+
+HowlPay's intended direction is to help prepare information for the receiving insurer's form. The current milestone demonstrates preparation; it does not establish insurer acceptance or provide a production system of record.
+
+**Today's scope:**
+1. A shared typed **Generic claim preparation form — demonstration**, with claimant, policy reference, incident type/date/location, description, rand amount and unresolved banking details. Use a separate fictional R200 fixture; preserve the historical settlement pack.
+2. In-app form and indexed supporting-fixture bundle previews, with serialisable JSON. Confirmed assistant and form edits share one session draft and field provenance.
+3. Versioned riot/theft/fire checklists, with published source links or explicit generic assumptions, conditional requirements, and missing/placeholder/supplied/reviewed states. A placeholder is incomplete. The receiving insurer determines final requirements.
+4. Automatically include a fictional timestamped area record labelled "an existing verified incident-alert feed for Cape Town small shops (partner)". No live feed is connected; corroboration alone does not establish coverage.
+5. A deterministic SHA-256 **off-chain preparation digest** over template/checklist versions, canonical form, stable attachment manifest, fixture content hashes and incomplete states. The existing transaction does not anchor this digest.
+6. Claimant capture and broker file preparation through a persistent Claims / Activity / Assistant shell. Broker follow-ups are drafts for manual review/copy only.
+
+Keep DEMO_PACK, DEMO_PACK_HASH and receipt inputs unchanged. Do not open or pay a new claim, redeploy the contract or submit to an insurer for this milestone. Preserve the 17:00 contract gate and fallback procedure; investigate read-only verification failures before suggesting fallback. Never fake a receipt.
+
+**Roadmap:** real insurer-specific templates and PDF filling, uploads, secure case storage, authentication, free-form case Q&A and general document understanding. Insurer decision support and platform administration remain beyond existing demo functions. See [[Claims Assistant Audit]] for evidence, prioritisation and validation.
+
 ## Acceptance criteria
 
 - [ ] Sepolia only. Scripts still refuse any other chain id. No mainnet RPC or token is added.
@@ -173,6 +193,10 @@ type OnChainClaim = {
 - [ ] No seed, private key, or `.env` contents appear in the UI, logs, git, or screenshots. Only the pack hash, not the pack contents, is on-chain.
 - [ ] Simulated rand is labelled. The incident source uses the frozen public phrase, not a partner product name.
 - [ ] Existing `scripts/` tests and both app/script typechecks still pass.
+- [ ] A clearly labelled generic demonstration form maps claimant, policy, incident type/date/location, description and amount; banking remains unresolved.
+- [ ] A separate fictional R200 preparation fixture produces a form and indexed fixture bundle, including a fictional incident record with the frozen source phrase.
+- [ ] The Expo walkthrough shows the incident checklist before Prepare demo pack; no live submission is implied.
+- [ ] The off-chain preparation digest covers form data, versions and fixture content/membership/state. It is explicitly unanchored; the existing Sepolia receipt and historical hash remain unchanged.
 
 ## Task order
 
@@ -184,7 +208,8 @@ Work in this order. Aim to have the contract tested, and deployed if at all poss
 4. Add scripts to deposit, openClaim, approveAndRelease, reject, and read events, using the WDK signer where possible.
 5. Add shared types, ZAR→USDT conversion via existing helpers, a stable pack hash, and the fictional sample pack (placeholders are fine).
 6. Build the Expo screens above, in order, on the existing design tokens. Hook the receipt to contract events and the tx hash.
-7. Run contract tests, `npm test` in `scripts/`, and both typechecks. Fix what you broke.
+6a. Add insurer claim-form compatibility (today's scope in the section above), including the Expo checklist screen. Do not start this until the contract path in steps 2–4 is in place, and do not let it slip the 17:00 gate in step 8. If 17:00 is at risk, finish or switch to the fallback first, then return to this work.
+7. Run contract tests, `npm test` in `scripts/`, and both typechecks. Include tests for the form-field mapping and the missing-documents checklist. Fix what you broke.
 8. **17:00 SAST gate:** if the contract is not deployed and callable for the demo, switch the payout path to the direct treasury transfer fallback and still show the tested contract in the video.
 9. Stop in time for a 3-minute video from [[Demo Script]]. Leave git changes uncommitted if the repo's standing rule is that Dylan reviews first; otherwise follow `AGENTS.md`.
 
