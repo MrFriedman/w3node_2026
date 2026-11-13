@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="HowlPay">
+  <rect width="32" height="32" rx="6" fill="#0F1419"/>
+  <text x="7" y="23" font-family="ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="700" fill="#F7F5F0">H</text>
+  <circle cx="24.5" cy="22.5" r="2.2" fill="#F5A524"/>
+</svg>
