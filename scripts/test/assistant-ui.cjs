@@ -3,7 +3,7 @@
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const assert = require('node:assert/strict');
 (async () => {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true, channel: process.env.PLAYWRIGHT_CHROME_CHANNEL || undefined });
   try {
     const page = await browser.newPage({ viewport: { width: 320, height: 844 } });
     let calls = 0;
@@ -17,7 +17,7 @@ const assert = require('node:assert/strict');
     await page.goto(process.env.HOWLPAY_TEST_URL || 'http://127.0.0.1:8092');
     const tab = name => page.getByRole('tab', { name, exact: true });
     const button = name => page.getByRole('button', { name, exact: true });
-    await button('Try the demo').click();
+    await button('Open the demo').first().click();
     await button('Help me answer').click();
     const message = 'There was a fire. I lost R240.';
     await page.getByLabel('Message', { exact: true }).fill(message);
