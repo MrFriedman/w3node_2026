@@ -1,29 +1,34 @@
-import { useRef, useState, type ComponentRef } from 'react'
+import { useEffect, useRef, useState, type ComponentRef } from 'react'
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio'
-import { CASE_ID, FIELDS, INVOICE, SAMPLE_INVOICE, LANGUAGES, QUESTIONS, VOICE_SAMPLE, cleanDraft, conflicts, extractFixture, extractInvoice, type CaseDraft, type Draft, type Field, type Language, type Proposal } from '../../shared/assistant.ts'
+import { CASE_ID, FIELDS, INVOICE, SAMPLE_INVOICE, LANGUAGES, QUESTIONS, VOICE_SAMPLE, cleanDraft, isQuestionOrRequest, extractFixture, extractInvoice, type CaseDraft, type Draft, type Field, type Language, type Proposal } from '../../shared/assistant.ts'
+import { FIELD_LABELS, attachments, missingSummary, brokerBrief, followUp, type PreparationOptions } from '../../shared/preparation.ts'
 import { colors, fonts, typography } from './theme'
 import { Body, Button, Card, Muted } from './ui'
 
 const server = process.env.EXPO_PUBLIC_ASSISTANT_URL?.replace(/\/$/, '')
-export const fieldLabels: Record<Field, string> = { incident: 'Incident type', date: 'Incident date', description: 'What happened', loss: 'Reported loss (ZAR)', evidence: 'Available evidence' }
-type Message = { speaker: 'shop' | 'assistant'; text: string; link?: 'Evidence' | 'Settlement' }
+export const fieldLabels = FIELD_LABELS
+type Message = { speaker: 'shop' | 'assistant'; text: string; link?: 'Evidence' | 'Settlement' | 'Preparation' }
 type Review = { proposal: Proposal; invoice?: boolean }
 export type ChatState = { messages: Message[]; awaiting?: Field; skipped: Field[]; language: Language; text: string; review?: Review; invoiceReviewed?: boolean; resolved?: Field[] }
 export const NEW_CHAT: ChatState = { messages: [], skipped: [], language: 'en', text: '' }
-const missing = (fields: Draft, skipped: Field[] = []) => FIELDS.find(field => !fields[field] && !skipped.includes(field))
+const missing = (fields: Draft, skipped: Field[] = []) => FIELDS.find(field => field !== 'banking' && !fields[field] && !skipped.includes(field))
 
-export function AssistantScreen({ chat, update, draft, confirm, onBack, open, payment, refresh, onSelectCase }: {
+export function AssistantScreen({ chat, update, draft, confirm, onBack, open, payment, refresh, onSelectCase, role, options, onBusyChange }: {
+  role: 'Shop' | 'Broker' | 'Insurer' | 'Platform'
+  options: PreparationOptions
+  onBusyChange: (busy: boolean) => void
   chat: ChatState
   update: (fn: (previous: ChatState) => ChatState) => void
   draft: CaseDraft
   confirm: (proposal: Proposal) => void
   onBack: () => void
-  open: (section: 'Evidence' | 'Settlement') => void
+  open: (section: 'Evidence' | 'Settlement' | 'Preparation') => void
   payment: string
   refresh: () => Promise<void>
   onSelectCase?: () => void
 }) {
+  const [mode, setMode] = useState(server ? 'Service configured · mode not yet verified' : 'Fixture mode · no model connected')
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   const [recording, setRecording] = useState(false)
@@ -33,12 +38,13 @@ export function AssistantScreen({ chat, update, draft, confirm, onBack, open, pa
   const counter = useRef(0)
   const busy = useRef(false)
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY)
+  useEffect(() => { onBusyChange(pending || recording); return () => onBusyChange(false) }, [pending, recording, onBusyChange])
+  const documents = attachments(chat.invoiceReviewed)
   const id = () => Date.now().toString(36) + '-' + ++counter.current
   const append = (...messages: Message[]) => update(c => ({ ...c, messages: [...c.messages, ...messages] }))
   const say = (text: string, link?: Message['link']) => append({ speaker: 'assistant', text, link })
-  const missingEvidence = () => say(draft.fields.evidence
-    ? 'Your draft describes available evidence. The sample pack still has placeholder attachments. Check Evidence to see what has actually been supplied.'
-    : 'The sample pack has no submitted photos or invoices. Add a note about what you have, or try the sample invoice.', 'Evidence')
+  const missingEvidence = () => say(missingSummary(draft, documents, options), 'Preparation')
+  const brief = () => say(brokerBrief(draft, documents, options), 'Preparation')
   async function send(text = chat.text, retrying = false) {
     const message = text.trim()
     if (!message || busy.current || recording || chat.review) return
@@ -50,7 +56,12 @@ export function AssistantScreen({ chat, update, draft, confirm, onBack, open, pa
     if (/\b(paid|payout|payment|settlement|status|betaal\w*|intlawulo|ndihlawulwe)\b/i.test(message) || /check my claim/i.test(message)) {
       say(payment, 'Settlement'); return
     }
-    if (/what.s missing|missing evidence|watter bewyse ontbreek|ubungqina obungekhoyo/i.test(message)) { missingEvidence(); return }
+    if (/what.s missing|missing|documents|checklist|placeholder|supplied|watter bewyse ontbreek|ubungqina obungekhoyo/i.test(message)) { missingEvidence(); return }
+    if (/broker|handoff|brief/i.test(message)) { brief(); return }
+    if (/follow.up/i.test(message)) { say(followUp(draft, documents, options), 'Preparation'); return }
+    if (isQuestionOrRequest(message)) {
+      say('I can guide fictional form fields, explain the document checklist and show verified settlement status. This request is retained in the conversation; it has not changed the draft. Open the preparation form for unresolved fields.', 'Preparation'); return
+    }
     busy.current = true; setPending(true)
     try {
       const unknown = /^(i don.t know|unknown|ek weet nie|andazi)[.! ]*$/i.test(message)
@@ -62,13 +73,15 @@ export function AssistantScreen({ chat, update, draft, confirm, onBack, open, pa
           body: JSON.stringify({ caseId: CASE_ID, message, language: chat.language, awaiting: chat.awaiting }),
         })
         if (!response.ok) throw new Error('Unavailable')
-        fields = cleanDraft((await response.json()).fields)
+        const result = await response.json()
+        setMode(result.mode === 'model' ? 'Configured model · extracted values need confirmation' : 'Fixture mode · server uses sample extraction')
+        fields = cleanDraft(result.fields)
       } else fields = extractFixture(message, chat.awaiting)
       const skipped = unknown && chat.awaiting ? [...chat.skipped, chat.awaiting] : chat.skipped
       const next = missing({ ...draft.fields, ...fields }, skipped)
       update(c => ({ ...c, awaiting: next, skipped,
         review: Object.keys(fields).length ? { proposal: { id: id(), caseId: CASE_ID, source: message, fields } } : undefined }))
-      say(next ? QUESTIONS[chat.language][next] : 'You can review your draft and check the evidence list.', next ? undefined : 'Evidence')
+      say(Object.keys(fields).length ? 'Review the proposed fields below. Confirm or discard them before sending another message.' : unknown ? (next ? QUESTIONS[chat.language][next] : 'Unknown information remains unresolved. Review the preparation checklist.') : 'I could not map that answer safely. Your message is retained. Use Manual draft to review a correction.', 'Preparation')
     } catch {
       setError('Assistant unavailable. Retry or enter the details manually.'); setRetry(message)
     } finally { busy.current = false; setPending(false) }
@@ -89,13 +102,14 @@ export function AssistantScreen({ chat, update, draft, confirm, onBack, open, pa
     if (!review.invoice) confirm({ ...review.proposal, fields })
     update(c => ({ ...c, review: undefined, invoiceReviewed: review.invoice || c.invoiceReviewed, resolved: [], awaiting: review.invoice ? c.awaiting : missing({ ...draft.fields, ...fields }, c.skipped) }))
     setError('')
-    say(review.invoice ? 'Sample invoice reviewed. Its purchase date and total are kept as separate evidence.' : 'Draft saved on this device for this demo session.', 'Evidence')
+    const next = missing({ ...draft.fields, ...fields }, chat.skipped)
+    say(review.invoice ? 'Sample invoice reviewed. Its purchase date and total are kept as separate evidence.' : 'Confirmed for this demo session. ' + (next ? QUESTIONS[chat.language][next] : 'Review the preparation checklist. Banking stays unresolved.'), 'Preparation')
   }
   async function voice() {
     setError('')
     if (busy.current) return
     if (!recording && !server) { setTranscript(VOICE_SAMPLE[chat.language]); return }
-    busy.current = true
+    busy.current = true; setPending(true)
     try {
       if (!recording) {
         if (!(await AudioModule.requestRecordingPermissionsAsync()).granted) throw new Error('Permission')
@@ -116,36 +130,39 @@ export function AssistantScreen({ chat, update, draft, confirm, onBack, open, pa
       const data = await response.json() as { text: string }
       setTranscript(data.text)
     } catch {
+      try { if (recording) await recorder.stop() } catch { /* Recording may already have stopped. */ }
+      setRecording(false)
       setError('Recording or transcription unavailable. Try the sample transcript or type instead.')
     } finally { busy.current = false; setPending(false) }
   }
   const review = chat.review
-  const discrepancies = chat.invoiceReviewed ? conflicts(draft.fields).filter(f => !chat.resolved?.includes(f)) : []
   return <KeyboardAvoidingView style={s.root} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <View style={s.header}>
       <Pressable accessibilityRole="button" accessibilityLabel="Back to claim" disabled={pending || recording} onPress={onBack} style={s.icon}><Text style={s.iconText}>‹</Text></Pressable>
-      <View style={s.flex}><Text accessibilityRole="header" style={s.title}>Ask HowlPay</Text><Muted>{CASE_ID} · Fictional case</Muted></View>
+      <View style={s.flex}><Text accessibilityRole="header" style={s.title}>Ask HowlPay</Text><Muted>{CASE_ID} · {role} demo</Muted></View>
     </View>
     {onSelectCase ? <View style={s.selection}><Body>Choose a case to open its conversation.</Body><Button label={CASE_ID + ' · Small-shop recovery'} onPress={onSelectCase} /></View> : <>
       <ScrollView ref={scroll} keyboardShouldPersistTaps="handled" contentContainerStyle={s.thread} onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: false })}>
         <View style={s.row}>{Object.entries(LANGUAGES).map(([key, label]) => <Pressable key={key} accessibilityRole="button" accessibilityState={{ selected: chat.language === key, disabled: pending || recording }}
           disabled={pending || recording} onPress={() => update(c => ({ ...c, language: key as Language }))} style={[s.chip, chat.language === key && s.selected]}><Text style={s.label}>{label}</Text></Pressable>)}</View>
+        <Muted>{mode}</Muted>
         <View style={s.bubble}><Body>I can help you describe an incident, organise evidence, or check this claim. Use fictional details only.</Body></View>
         {!chat.messages.length && <View style={s.row}>
-          <Button label="Report an incident" kind="ghost" onPress={startReport} />
+          {role === 'Shop' ? <Button label="Complete my form" kind="ghost" onPress={startReport} /> :
+            <Button label={role === 'Broker' ? 'Prepare broker handoff' : 'Review preparation summary'} kind="ghost" onPress={brief} />}
           <Button label="What’s missing?" kind="ghost" onPress={missingEvidence} />
           <Button label="Check my claim" kind="ghost" onPress={() => say(payment, 'Settlement')} />
         </View>}
         {chat.messages.map((item, index) => <View key={index} style={[s.bubble, item.speaker === 'shop' && s.mine]}>
           <Text style={s.label}>{item.speaker === 'shop' ? 'You' : 'HowlPay'}</Text><Body>{item.text}</Body>
-          {item.link && <Button label={'Open ' + item.link.toLowerCase()} kind="ghost" onPress={() => open(item.link!)} />}
-          {item.link === 'Settlement' && <Button label="Recheck settlement" kind="ghost" onPress={async () => { await refresh(); open('Settlement') }} />}
+          {item.link && <Button label={'Open ' + item.link.toLowerCase()} kind="ghost" disabled={pending || recording} onPress={() => open(item.link!)} />}
+          {item.link === 'Settlement' && <Button label="Recheck settlement" kind="ghost" disabled={pending || recording} onPress={async () => { await refresh(); open('Settlement') }} />}
         </View>)}
         {review && <Card>
           <Text accessibilityRole="header" style={s.title}>{review.invoice ? 'Review sample invoice' : 'Review claim draft'}</Text>
           <Muted>Source · {review.proposal.source}</Muted>
           {review.invoice && <Body>{SAMPLE_INVOICE}</Body>}
-          {(review.invoice ? ['date', 'loss'] as const : FIELDS).map(field => <View key={field}>
+          {(review.invoice ? ['date', 'loss'] as const : FIELDS.filter(f => f !== 'banking')).map(field => <View key={field}>
             <Text style={s.label}>{review.invoice ? field === 'date' ? 'Invoice date' : 'Invoice total (ZAR)' : fieldLabels[field]}</Text>
             <TextInput accessibilityLabel={fieldLabels[field]} style={s.input} maxLength={2000} value={review.proposal.fields[field] ?? ''}
               editable={!review.invoice} placeholder="Unresolved" onChangeText={value => update(c => c.review ? ({ ...c, review: { ...c.review, proposal: {
@@ -155,13 +172,6 @@ export function AssistantScreen({ chat, update, draft, confirm, onBack, open, pa
           <Button label={review.invoice ? 'Confirm evidence review' : 'Confirm and save draft'} onPress={() => saveReview(review)} />
           <Button label="Discard proposal" kind="ghost" onPress={() => { setError(''); update(c => ({ ...c, review: undefined, awaiting: missing(draft.fields, c.skipped) })) }} />
         </Card>}
-        {discrepancies.map(field => <Card key={field}>
-          <Text style={s.label}>{field === 'date' ? 'Dates differ' : 'Amounts differ'}</Text>
-          <Body>Claim draft: {draft.fields[field]} · Sample invoice: {INVOICE[field]}</Body>
-          <Muted>{field === 'date' ? 'A purchase date can differ from an incident date.' : 'The invoice total can differ from the reported loss.'}</Muted>
-          <Button label="Review draft correction" kind="ghost" disabled={Boolean(review)} onPress={() => startReview(draft.fields, 'Claimant correction after reviewing ' + INVOICE.id)} />
-          <Button label="Keep both values" kind="ghost" onPress={() => update(c => ({ ...c, resolved: [...(c.resolved ?? []), field] }))} />
-        </Card>)}
         {transcript !== undefined && <Card><Text style={s.label}>Review transcript</Text>
           <TextInput accessibilityLabel="Voice transcript" style={s.input} multiline maxLength={2000} value={transcript} onChangeText={setTranscript} />
           <Button label="Use transcript in composer" onPress={() => { update(c => ({ ...c, text: transcript })); setTranscript(undefined) }} />
@@ -171,10 +181,12 @@ export function AssistantScreen({ chat, update, draft, confirm, onBack, open, pa
         {error ? <Text accessibilityRole="alert" style={s.error}>{error}</Text> : null}
         {retry ? <Button label="Retry message" kind="ghost" onPress={() => void send(retry, true)} /> : null}
         <View style={s.row}>
-          <Button label="Manual draft" kind="ghost" disabled={pending || Boolean(review)} onPress={() => startReview(draft.fields, 'Manual claimant entry')} />
+          <Button label="Manual draft" kind="ghost" disabled={pending || recording || Boolean(review)} onPress={() => startReview(draft.fields, 'Manual claimant entry')} />
           <Button label="Try sample transcript" kind="ghost" disabled={pending || recording} onPress={() => setTranscript(VOICE_SAMPLE[chat.language])} />
         </View>
       </ScrollView>
+      {review && <Muted>Confirm or discard the proposal above to continue messaging.</Muted>}
+      {recording && <Muted>Stop recording before changing tabs.</Muted>}
       <View style={s.composer}>
         <Pressable accessibilityRole="button" accessibilityLabel="Add sample invoice" disabled={pending || recording || Boolean(review)} style={s.icon}
           onPress={() => startReview(extractInvoice(SAMPLE_INVOICE), INVOICE.id, true)}><Text style={s.iconText}>＋</Text></Pressable>

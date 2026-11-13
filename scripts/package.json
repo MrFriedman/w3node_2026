@@ -15,7 +15,8 @@
     "claim": "node claim-escrow.ts",
     "test:receipt": "node --test test/claim-receipt.test.ts",
     "assistant": "node assistant-server.ts",
-    "test:assistant": "node --test test/assistant.test.ts"
+    "test:assistant": "node --test test/assistant.test.ts",
+    "test:preparation": "node --test test/preparation.test.ts"
   },
   "dependencies": {
     "@tetherto/wdk": "^1.0.0-beta.23",

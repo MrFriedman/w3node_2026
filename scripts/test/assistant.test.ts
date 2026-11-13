@@ -26,6 +26,16 @@ test('confirmation is idempotent and preserves original source', () => {
 })
 test('invoice extraction does not treat purchase date or total as claimant facts', () => {
   assert.deepEqual(extractInvoice(SAMPLE_INVOICE), { date: '2026-11-12', loss: '180.00' })
-  assert.deepEqual(conflicts({ date: '2026-11-13', loss: '200' }), ['date', 'loss'])
+  assert.deepEqual(conflicts({ date: '2026-11-13', loss: '200' }), [])
   assert.deepEqual(conflicts({ loss: '180' }), [])
+})
+
+test('questions and unsupported actions never become field values', () => {
+  for (const message of ['What documents do I need?', 'Can my broker help?', 'Please approve my claim', 'Show me my payout', 'What date should I enter']) {
+    for (const field of ['incident', 'date', 'description', 'claimant'] as const) assert.deepEqual(extractFixture(message, field), {})
+  }
+})
+test('same-meaning corrections compare dates and numeric amounts', () => {
+  assert.deepEqual(conflicts({ loss: '180.00' }, { loss: '180' }), [])
+  assert.deepEqual(conflicts({ date: '2026-11-13' }, { date: '2026-11-12' }), ['date'])
 })

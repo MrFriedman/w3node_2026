@@ -1,4 +1,6 @@
-import { EMPTY_DRAFT, FIELDS, INVOICE, confirmProposal, conflicts } from '../../shared/assistant.ts'
+import { FORM_FIXTURE, DEFAULT_OPTIONS, attachments, brokerBrief } from '../../shared/preparation.ts'
+import { PreparationScreen } from './PreparationScreen'
+import { FIELDS, INVOICE, confirmProposal } from '../../shared/assistant.ts'
 import { AssistantScreen, NEW_CHAT, fieldLabels } from './AssistantScreen'
 import { useEffect, useRef, useState, type ComponentRef } from 'react'
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
@@ -11,9 +13,9 @@ import { readDemoClaim } from './claim-receipt'
 import { colors, fonts, radius, spacing, typography } from './theme'
 import { Banner, Body, Button, Card, Muted } from './ui'
 
-type Role = 'Insurer' | 'Platform' | 'Shop'
-type Section = 'Overview' | 'Evidence' | 'Decision' | 'Settlement'
-const sections: Section[] = ['Overview', 'Evidence', 'Decision', 'Settlement']
+type Role = 'Insurer' | 'Platform' | 'Shop' | 'Broker'
+type Section = 'Overview' | 'Evidence' | 'Preparation' | 'Decision' | 'Settlement'
+const sections: Section[] = ['Overview', 'Evidence', 'Preparation', 'Decision', 'Settlement']
 const evidence = [
   { title: 'Incident corroboration', kind: 'Sample incident', detail: 'Fictional alert at 14:05, 300 m from the shop. A real record would include the date, location, source and human verification history. None is connected in this demo.' },
   { title: 'Photo 01 · Shop exterior', kind: 'Photo placeholder', detail: 'Would document visible damage and its context. No photograph has been uploaded; date, location and authenticity have not been checked.' },
@@ -41,11 +43,13 @@ function Choice({ label, selected, onPress }: { label: string; selected: boolean
 }
 
 export function ClaimScreen() {
-  const [chatPage, setChatPage] = useState<'select' | 'chat'>()
+  const [caseSelected, setCaseSelected] = useState(false)
+  const [assistantLocked, setAssistantLocked] = useState(false)
+  const [options, setOptions] = useState(DEFAULT_OPTIONS)
   const [chat, setChat] = useState(NEW_CHAT)
-  const [draft, setDraft] = useState(EMPTY_DRAFT)
+  const [draft, setDraft] = useState(FORM_FIXTURE)
   const [showBrief, setShowBrief] = useState(false)
-  const [tab, setTab] = useState<'Claims' | 'Activity'>('Claims')
+  const [tab, setTab] = useState<'Claims' | 'Activity' | 'Assistant'>('Claims')
   const [detail, setDetail] = useState(false)
   const [section, setSection] = useState<Section>('Overview')
   const [role, setRole] = useState<Role>('Insurer')
@@ -59,6 +63,7 @@ export function ClaimScreen() {
   const [walkthrough, setWalkthrough] = useState<'closed' | 'review' | 'handoff' | 'cancelled' | 'rejected'>('closed')
   const scroll = useRef<ComponentRef<typeof ScrollView>>(null)
   const busy = useRef(false)
+  const documents = attachments(chat.invoiceReviewed)
   const claim = view.snapshot?.claim
   const loading = view.refresh === 'loading'
   const invalid = Boolean(hash.trim() && !isTxHash(hash.trim()))
@@ -73,7 +78,7 @@ export function ClaimScreen() {
     finally { busy.current = false }
   }
   useEffect(() => { void refresh() }, [])
-  function navigate(next: Section) { setDetail(true); setSection(next); scroll.current?.scrollTo({ y: 0, animated: false }) }
+  function navigate(next: Section) { setTab('Claims'); setCaseSelected(true); setDetail(true); setSection(next); scroll.current?.scrollTo({ y: 0, animated: false }) }
   async function copy(label: string, value: string) {
     try { await Clipboard.setStringAsync(value); setCopied(`${label} copied`) } catch { setCopied('Copy unavailable. Select the value to copy it.') }
   }
@@ -96,21 +101,25 @@ export function ClaimScreen() {
   </View>
   const paymentAnswer = [
     view.refresh === 'error' ? view.snapshot ? 'Receipt is stale. Last verified: ' + status + '.' : 'A verified settlement receipt is unavailable.' : status + '.',
+    view.snapshot ? 'Last verified ' + view.snapshot.checkedAt + ', block ' + view.snapshot.blockNumber + '.' : 'No verification timestamp available.',
     'Rand delivery is simulated. No actual rand has been delivered.',
   ].join(' ')
-  if (chatPage) return <AssistantScreen chat={chat} update={setChat} draft={draft}
-    confirm={proposal => setDraft(current => confirmProposal(current, proposal))}
-    onBack={() => setChatPage(undefined)} open={next => { setChatPage(undefined); navigate(next) }}
-    payment={paymentAnswer} refresh={refresh} onSelectCase={chatPage === 'select' ? () => setChatPage('chat') : undefined} />
   return <View style={s.root}>
+    <View style={[s.flex, tab !== 'Assistant' && { display: 'none' }]}><AssistantScreen chat={chat} update={setChat} draft={draft}
+      confirm={proposal => setDraft(current => confirmProposal(current, proposal))}
+      onBack={() => navigate('Overview')} open={navigate}
+      payment={paymentAnswer} refresh={refresh} role={role} options={options}
+      onBusyChange={setAssistantLocked}
+      onSelectCase={!caseSelected ? () => setCaseSelected(true) : undefined} /></View>
+    <View style={[s.flex, tab === 'Assistant' && { display: 'none' }]}>
     <View style={s.header}><View><Text style={s.wordmark}>{PRODUCT_NAME}<Text style={s.dot}> ●</Text></Text><Text style={s.headerSub}>CLAIMS WORKSPACE</Text></View>
       <Pressable accessibilityRole="button" accessibilityLabel="Demo settings and operator instructions" accessibilityState={{ expanded: panel }} onPress={() => { setPanel(!panel); scroll.current?.scrollTo({ y: 0, animated: false }) }} style={s.demoButton}><Text style={s.choiceText}>Demo {panel ? '−' : '+'}</Text></Pressable>
     </View>
     <ScrollView ref={scroll} style={s.scroll} contentContainerStyle={s.content} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
-      <View style={s.context}><Text style={s.contextText}>SEPOLIA TESTNET</Text><Text style={s.caption}>{role === 'Insurer' ? 'Claims operator' : role === 'Shop' ? 'Shop view' : 'Platform view'}</Text></View>
+      <View style={s.context}><Text style={s.contextText}>SEPOLIA TESTNET</Text><Text style={s.caption}>{role === 'Insurer' ? 'Claims operator' : role + ' view'}</Text></View>
       {panel && <Card>
         <Heading>Demo controls</Heading><Muted>Role switching is a presentation tool, not authentication. One test wallet performs all roles in the recorded payment.</Muted>
-        <View style={s.wrap}>{(['Insurer', 'Platform', 'Shop'] as Role[]).map(r => <Choice key={r} label={r} selected={r === role} onPress={() => { setRole(r); if (r === 'Shop' && section === 'Decision') setSection('Overview') }} />)}</View>
+        <View style={s.wrap}>{(['Insurer', 'Broker', 'Platform', 'Shop'] as Role[]).map(r => <Choice key={r} label={r} selected={r === role} onPress={() => { setRole(r); if ((r === 'Shop' || r === 'Broker') && section === 'Decision') setSection('Overview') }} />)}</View>
         <Muted>Synthetic evidence is bundled with this prototype. There is no private storage service, live insurer, or connected incident feed.</Muted>
         <Label>Operator signing · terminal only</Label>
         <Muted>Run from scripts/. Commands below quote by default. Review the payee, amount, fee and network before a separately authorised signing step. This existing claim cannot be opened or paid again.</Muted>
@@ -126,13 +135,13 @@ export function ClaimScreen() {
         {!detail ? <>
           <Text accessibilityRole="header" style={s.title}>{role === 'Shop' ? 'Your recovery' : 'Claims'}</Text>
           <Body>{role === 'Shop' ? 'Follow your sample claim and its next step.' : 'A clear path from evidence to settlement.'}</Body>
-          {role === 'Shop' && <Button label="Ask HowlPay" onPress={() => setChatPage('select')} />}
+          {role === 'Shop' && <Button label="Ask HowlPay" onPress={() => setTab('Assistant')} />}
           <View style={s.sectionHeading}><Label>{role === 'Shop' ? 'YOUR CASE FILE' : 'CASE FILES'}</Label><Muted>1 fictional case</Muted></View>
           <View style={s.claimCard}>
             <View style={s.wrap}><Label>CLM–001</Label><Badge>Fictional evidence</Badge></View>
             <Text style={s.caseTitle}>Small-shop recovery</Text>
             <Text style={s.amount}>R200<Text style={s.cents}>.00</Text></Text>
-            <Muted>Requested amount · illustrative case</Muted>
+            <Muted>Original requested amount · historical demo case</Muted>
             <View style={s.divider} />
             <Badge good={claim?.state === 'paid'}>{status}</Badge>
             <Muted>1 sample incident · 3 photo placeholders · 2 invoice placeholders</Muted>
@@ -143,34 +152,37 @@ export function ClaimScreen() {
           <View style={s.note}><Label>BUILT AROUND A HUMAN DECISION</Label><Muted>Evidence supports assessment. The insurer decides the claim under the policy; the contract records and enforces the token payout.</Muted></View>
         </> : <>
           <Button label="← All claims" kind="ghost" onPress={() => { setDetail(false); scroll.current?.scrollTo({ y: 0 }) }} />
-          {role === 'Shop' && <Button label="Ask HowlPay" onPress={() => setChatPage('chat')} />}
+          {role === 'Shop' && <Button label="Ask HowlPay" onPress={() => setTab('Assistant')} />}
           <Label>CLM–001 · FICTIONAL CASE</Label><Heading>Small-shop recovery</Heading>
           <View style={s.wrap}><Text style={s.detailAmount}>R200.00</Text><Badge good={claim?.state === 'paid'}>{claim?.state === 'paid' ? 'Test tokens released' : status}</Badge></View>
-          <View style={s.sectionNav}>{sections.filter(x => role !== 'Shop' || x !== 'Decision').map(x => <Choice key={x} label={x} selected={section === x} onPress={() => navigate(x)} />)}</View>
+          <Muted>Preparation draft requested amount · R{draft.fields.loss ?? 'unresolved'}. Edits do not change the historical settlement.</Muted>
+          <View style={s.sectionNav}>{sections.filter(x => !['Shop', 'Broker'].includes(role) || x !== 'Decision').map(x => <Choice key={x} label={x} selected={section === x} onPress={() => navigate(x)} />)}</View>
+          {section === 'Preparation' && <PreparationScreen draft={draft} documents={documents}
+            options={options} setOptions={setOptions} broker={role === 'Broker'}
+            confirm={proposal => setDraft(current => confirmProposal(current, proposal))} />}
           {(section === 'Overview' || role === 'Shop' && section === 'Decision') && <>
             {draft.history.length > 0 && <Card><Label>LOCAL DEMO DRAFT</Label>
               {FIELDS.map(field => <Body key={field}>{fieldLabels[field]} · {draft.fields[field] ?? 'Unresolved'}</Body>)}
               <Button label="Review draft sources" kind="ghost" onPress={() => navigate('Evidence')} />
             </Card>}
-            {role === 'Insurer' && <Card><Heading>Claims-handler brief</Heading>
+            {['Insurer', 'Broker'].includes(role) && <Card><Heading>Claims-handler brief</Heading>
               <Muted>Uses the confirmed demo draft and reviewed sample evidence.</Muted>
               <Button label={showBrief ? 'Hide brief' : 'Generate brief'} kind="ghost" onPress={() => setShowBrief(!showBrief)} />
               {showBrief && <>
-                <Body>Timeline · {draft.fields.date ?? 'Incident date unresolved'} · {draft.fields.description ?? 'No confirmed incident narrative'}</Body>
-                <Body>Reported loss · {draft.fields.loss ? 'R' + draft.fields.loss : 'Unresolved'}</Body>
-                <Body>Evidence · {draft.fields.evidence ?? 'None reported'}{chat.invoiceReviewed ? ' · ' + INVOICE.id + ' reviewed' : ''}</Body>
-                <Muted>Open questions · {FIELDS.filter(field => !draft.fields[field]).map(field => fieldLabels[field]).join(', ') || 'No missing draft fields'}{chat.invoiceReviewed && conflicts(draft.fields).length > 0 ? ' · Invoice and draft values differ. Review both sources.' : ''}</Muted>
-                <Button label="Open draft and evidence sources" kind="ghost" onPress={() => navigate('Evidence')} />
+                <Text selectable style={s.hash}>{brokerBrief(draft, documents, options)}</Text>
+                <Button label="Open form, checklist and sources" kind="ghost" onPress={() => navigate('Preparation')} />
               </>}
             </Card>}
             <Card><Label>CLAIM SUMMARY</Label><Body>Incident near the shop</Body><Muted>Sample alert · 14:05 · 300 m away. The date, cause of loss and coverage have not been established by this fictional pack.</Muted>
               <View style={s.divider} /><Body>Evidence needs human review</Body><Muted>Five attachment slots are placeholders, not submitted documents. This is not a complete, validated insurance claim.</Muted>
+              <Button label="Prepare claim form →" onPress={() => navigate('Preparation')} />
               <Button label="Inspect the evidence →" onPress={() => navigate('Evidence')} />
             </Card>
             <Card><Label>PROGRESS</Label><Body>01 · Evidence assembled for demonstration</Body><Muted>Fictional incident and attachment placeholders.</Muted><Body>02 · Human decision</Body><Muted>{claim?.state === 'paid' ? 'An existing insurer-authorised test release is recorded on Sepolia. This does not validate the fictional evidence.' : 'A human insurer must assess coverage before authorising payment.'}</Muted><Body>03 · Settlement</Body><Muted>{status}</Muted><Body>04 · Rand delivery</Body><Muted>Simulation only. No money has reached a bank or mobile-money account.</Muted><Button label="View shared settlement →" kind="ghost" onPress={() => navigate('Settlement')} /></Card>
           </>}
           {section === 'Evidence' && <>
-            <Heading>Evidence, in context</Heading><Muted>Inspect each item before making a decision. This synthetic pack demonstrates organisation, not verified completeness.</Muted>
+            <Heading>Evidence, in context</Heading><Muted>Historical settlement pack: these original slots remain unchanged to preserve receipt matching. The separate preparation bundle includes its own fixture invoice and document checklist.</Muted>
+            <Button label="Inspect current preparation bundle" kind="ghost" onPress={() => navigate('Preparation')} />
             {draft.history.length > 0 && <Card><Label>CLAIMANT DRAFT SOURCES</Label>
               {draft.history.slice(-5).reverse().map(item => <View key={item.id}>
                 <Body>{item.source}</Body><Muted>{FIELDS.filter(field => item.fields[field]).map(field => fieldLabels[field] + ': ' + item.fields[field]).join(' · ')}</Muted>
@@ -183,8 +195,8 @@ export function ClaimScreen() {
               </Pressable>
               {expanded === i && <View style={s.evidenceDetail}><View style={s.placeholder}><Text style={s.placeholderTitle}>{i === 0 ? 'SAMPLE INCIDENT RECORD' : i < 4 ? 'NO PHOTO ATTACHED' : 'NO INVOICE ATTACHED'}</Text></View><Body>{item.detail}</Body>{i === 0 && <><Muted>Intended source: {CLAIM_SOURCE}.</Muted><Muted>Independent corroboration supports human assessment. It does not prove that a covered loss occurred.</Muted></>}</View>}
             </View>)}
-            <Muted>Only the digest, payee and amount are recorded on-chain. Real photos, invoices and personal information require a private backend, which is not implemented.</Muted>
-            {role !== 'Shop' && <Button label="Continue to decision →" onPress={() => navigate('Decision')} />}
+            <Muted>Only the historical pack hash, payee and amount are recorded on-chain. The new preparation digest is not anchored. Real photos, invoices and personal information require a private backend, which is not implemented.</Muted>
+            {['Insurer', 'Platform'].includes(role) && <Button label="Continue to decision →" onPress={() => navigate('Decision')} />}
           </>}
           {section === 'Decision' && role !== 'Shop' && <>
             <Heading>{role === 'Platform' ? 'Prepare the handoff' : 'A human makes the decision'}</Heading>
@@ -231,7 +243,8 @@ export function ClaimScreen() {
       </>}
       <Text style={s.footer}>PROTOTYPE · FICTIONAL CASE · REAL TESTNET EVIDENCE</Text>
     </ScrollView>
-    <View style={s.tabs} accessibilityRole="tablist">{(['Claims', 'Activity'] as const).map(name => <Pressable key={name} accessibilityRole="tab" accessibilityState={{ selected: tab === name }} onPress={() => { setTab(name); scroll.current?.scrollTo({ y: 0, animated: false }) }} style={[s.tab, tab === name && s.tabOn]}><Text style={[s.tabText, tab === name && s.tabTextOn]}>{name === 'Claims' ? '▤  ' : '◷  '}{name}</Text></Pressable>)}</View>
+    </View>
+    <View style={s.tabs} accessibilityRole="tablist">{(['Claims', 'Activity', 'Assistant'] as const).map(name => <Pressable key={name} accessibilityRole="tab" accessibilityState={{ selected: tab === name, disabled: assistantLocked }} disabled={assistantLocked} onPress={() => { setTab(name); scroll.current?.scrollTo({ y: 0, animated: false }) }} style={[s.tab, tab === name && s.tabOn]}><Text style={[s.tabText, tab === name && s.tabTextOn]}>{name}</Text></Pressable>)}</View>
   </View>
 }
 const s = StyleSheet.create({
