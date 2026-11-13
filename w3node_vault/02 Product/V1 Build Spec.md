@@ -216,3 +216,15 @@ Work in this order. Aim to have the contract tested, and deployed if at all poss
 9. Stop in time for a 3-minute video from [[Demo Script]]. Leave git changes uncommitted if the repo's standing rule is that Dylan reviews first; otherwise follow `AGENTS.md`.
 
 Do not invent a new chain client or a new token. Do not edit this spec to weaken the guards or to put personal data on-chain.
+
+## Approved UI refinement — theft preparation and landing page (13 Nov, later)
+
+This section supersedes the earlier screen/navigation and signing walkthrough for the current UI milestone. No new payment, contract deployment, real insurer submission or payment integration is authorised. The historical contract, DEMO_PACK, DEMO_PACK_HASH and receipt reader remain unchanged.
+
+- Landing page introduces shopkeepers working with their existing brokers, broker preparation value and insurer decision authority. CTAs enter the local demo; no signup, backend or publication. Repeated-request reduction remains a hypothesis.
+- Default Shop view, fictional theft preparation PREP–THEFT–001, Claim / Requests / Progress. Role switching is explicitly a demo control. Contextual assistant confirmation and conversation persist within the session.
+- Shared workflow stages: Draft, Broker review, Needs information, Ready for insurer, Submitted for insurer review. Required demo fields, supplied synthetic evidence and accepted required requests gate readiness. Real insurer requirements and acceptance remain unresolved.
+- Seeded police-reference request supports answer, clarification and broker acceptance. Synthetic policy/photo records are explicitly added to complete the demonstration; placeholders do not count as complete.
+- Ready freezes a preparation snapshot. Material form, evidence, option or request changes invalidate readiness. Simulated submissions retain numbered immutable versions. Insurer decisions are illustrative; requested loss and illustrative approved amount are separate.
+- The current theft claim never becomes Paid or Rand received. An expandable historical testnet payment card retains independent verification/stale/unavailable/pending/failed handling. On-ramp and off-ramp are labelled SIMULATED, and the pre-funded pool is explained separately.
+- Session-local only, explicit reset and reload notice. No authentication, real uploads, secure storage, insurer integration or native signing added. Contract amount/payee freeze-at-open and duplicate pack guard remain unchanged limitations.

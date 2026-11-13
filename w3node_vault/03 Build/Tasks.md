@@ -53,3 +53,14 @@ Real gaps. Mention them if asked. Do not build them into the Friday story as don
 - [ ] A live licensed off-ramp to rand. Today's rand leg is simulated.
 - [ ] On-device WDK signing, Sepolia only.
 - [ ] Recovery-fund or relief-pool payouts on the same rail (second channel, not v1).
+
+## Approved theft UX and landing-page pass (13 Nov, later)
+
+- [x] Responsive landing page with working entry CTAs and honest broker value hypothesis.
+- [x] Shop-first Claim / Requests / Progress, contextual assistant, separate historical receipt.
+- [x] Police-reference request/clarification/acceptance, readiness gates, immutable submission versions, edit invalidation, illustrative insurer decisions.
+- [x] Session reset; fiction, submission, payment and fiat simulation boundaries.
+- [x] Logic/contract tests, both typechecks, browser responsive workflow and assistant transport checks (see UI UX Audit).
+- [ ] Physical native device, native keyboard/text scaling, VoiceOver/TalkBack checks.
+- [ ] Real shopkeeper/broker usability sessions; validate repeated-request and handling-cost hypotheses.
+- [ ] Record the revised three-minute demo using real read-only historical evidence, never browser test fixtures.

@@ -53,7 +53,7 @@ test('broker outputs use current draft, gaps, and source links', () => {
   const summary = brokerBrief(draft, attachments(), { repairs: true, identityRequested: false })
   assert.match(summary, /321/)
   assert.match(summary, /Repair quotations/)
-  assert.match(summary, /https:\/\/sasria.co.za/)
+  assert.match(summary, /Generic demo assumption/)
   assert.match(followUp(draft, attachments()), /manual review/)
   assert.match(followUp(draft, attachments()), /placeholder/)
 })

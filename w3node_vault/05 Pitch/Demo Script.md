@@ -1,69 +1,54 @@
 ---
-tags:
-  - pitch
-  - demo
+tags: [pitch, demo]
 status: draft
 date: 2026-11-13
 ---
 
 # Demo script
 
-Three minutes, preferably 1–2. One shop, one private claim pack, one escrowed payout from human approval to a shared receipt, one re-check. Label every simulated part.
+## Current approved walkthrough — three minutes, no new payment
 
-Build against [[V1 Build Spec]]. Wallets and hashes: [[Testnet]]. Do not show a seed, a `.env` file, or a mainnet network. Do not name a specific partner product; say "an existing verified incident-alert feed for Cape Town small shops (partner)".
+Lead with theft-claim preparation for a shopkeeper and their existing broker. The insurer decides coverage and remains the payer. Open the landing page, then **Try the demo**. Everything in PREP–THEFT–001 is fictional and session-local. Role switching is a presentation control, not authentication.
 
-Suggested recording (Cmd+Shift+5): the private pack and pack hash in Expo, `openClaim`, insurer approve, `approveAndRelease`, the receipt read from contract events plus Etherscan, the labelled simulated rand payout. If the 17:00 fallback is in force, show the tested contract first, then a direct treasury → shop send, and say so.
+### 0:00–0:20 · A clear next step
 
-## 0:00 — Who
+“This shopkeeper already has a broker. HowlPay helps them prepare the theft claim and see who needs to act next. We aim to reduce repeated requests and preparation work; savings are not measured yet.”
 
-"This is a spaza owner, and behind them an insurer that sells cover to small shops. After a riot, theft, or fire they need a complete claim, less admin, and one receipt both sides can check."
+Show the next-action card, fictional broker Alex, requested loss and outstanding police-reference request. The current theft claim has no payout.
 
-## 0:20 — The private pack
+### 0:20–0:50 · Shop answers, with confirmation
 
-Open HowlPay. Show the pack: the verified-alert card, photos, invoices, the pack hash, and R200 / USDT. Say the private pack is the source of truth, and only the hash goes on-chain. Read the source as "an existing verified incident-alert feed for Cape Town small shops (partner)".
+Use **Help me answer**. Enter “There was a theft on 2026-11-13. I lost R200 of stock.” Review and confirm the proposal. Nothing is saved to the preparation draft until confirmed. Return to Claim. The assistant cannot accept broker requests, submit claims, decide coverage or authorise payment.
 
-## 0:45 — Open and approve
+### 0:50–1:20 · Broker request and shop response
 
-Show `openClaim`. Switch to the insurer role. A human reviews the pack and approves (or show reject first: no payout). Then the five-step payment review: payee, USDT, rand, fee, Sepolia.
+Open Requests. Enter “DEMO-CAS-123, reported 13 Nov”. Send the response to the demo broker. In Demo controls switch to Broker. Optionally show Request clarification, switch to Shop to clarify, then return to Broker and Accept response. These are local simulation actions, not messages sent to real people.
 
-## 1:15 — Release and receipt
+### 1:20–1:55 · Prepare a reviewable file
 
-Show `approveAndRelease`. Read the events: opened, approved, paid. That is the shared receipt, with the Etherscan link. The contract released a pre-funded float; it did not decide the claim.
+On Claim, inspect confirmed answers and readiness gaps. Open Review form and evidence; add the explicitly fictional policy and photo records. These are synthetic fixtures, not uploaded documents or verified evidence. The receiving insurer sets the actual form and requirements; banking remains unresolved.
 
-If the contract path is not live, say you are using the fallback: a direct treasury transfer, and show the tested contract separately.
+Mark ready for insurer, then Simulate submission to insurer. A frozen version is created. If demonstrating an edit, show that it requires renewed broker review while the submitted version stays unchanged.
 
-## 1:50 — Recovery
+### 1:55–2:20 · Insurer authority
 
-Take that tx / claim id. Turn the story to a dropped signal: both sides still have one receipt. Re-read the claim state or `status --hash`. Say you are not paying again. The contract will not double-pay.
+Switch to Insurer, in Progress. Show the submitted requested loss separately from the illustrative approved amount. Illustrate approval (or rejection). “This is a simulated decision and payment handoff. No insurer submission, authorisation or payment has occurred.” The current theft case still says No payout.
 
-## 2:20 — Simulated rand payout
+### 2:20–2:50 · Separate historical payment example
 
-Show the labelled simulation and the `SIM-` reference, "via licensed partner". "The shop sees rand. They did not have to hold USDT. No bank or mobile-money payout was sent in this demo."
+Expand Existing testnet payment example. Re-check the existing receipt read-only. If verification fails, show unavailable or stale honestly; do not record a mocked test receipt as live evidence. The receipt belongs to the historical case, not this theft preparation. No new opening, release, deployment or treasury transfer is part of this recording.
 
-## 2:45 — Close
+Explain: “The existing testnet example used a pre-funded Sepolia pool. An insurer would separately authorise settlement. Fiat on-ramp and rand off-ramp are SIMULATED; no real bank or mobile-money integration is connected. The shop would not need to hold USDT.”
 
-"The pack is private. The contract holds the obligation. A human approved, then the float paid, and both sides can re-check the same receipt."
+### 2:50–3:00 · Close
 
-## Superseded: 12 Nov credit-and-reward script
+“One place to see the next action, resolve the missing information, and prepare the file for the insurer. The insurer keeps the coverage and payment decision.”
 
-Kept as fallback shots only (architecture diagram, an R20 top-up re-check). Do not lead the Friday video with a service-credit top-up.
+## Recording boundaries
 
-To re-check the confirmed shop → treasury top-up:
-
-`npm run wallet -- status --hash 0x946a27d941c971b01ff40951b4c7f30f57c650c556a8e0786c1b41f36db4a918`
-
-Etherscan: https://sepolia.etherscan.io/tx/0x946a27d941c971b01ff40951b4c7f30f57c650c556a8e0786c1b41f36db4a918
-
-## Record the confirmed escrow walkthrough
-
-The Expo Claim tab is the first screen. Show the fictional pack and switch between Shop, Platform and Insurer. Claim #1 is already paid. Describe opening and approval in past tense, using the two confirmed event receipts below. The CLI prints the R200 and 12.074452 test USD₮ release quote before signing. The original release quote showed a maximum fee of 0.000000000003077034 Sepolia ETH. The sample uses one test wallet for the operator roles and payee.
-
-From `scripts/`:
-
-```sh
-npm run claim -- pack
-npm run claim -- read --hash 0xdb7bc760e7223c93f5e36eb33703e0c6e37a21f3324343f91b8989f132951afb
-npm run claim -- read --hash 0xbcd5da34f3b3b022601fa8c3996bea009c2ce34ca6f5ff140eac6ced7ee0f185
-```
-
-Paste the release hash into Expo and tap **Re-check on Sepolia** twice. Show the same Paid receipt both times, open the Etherscan link, then tap **Simulate rand payout**. Explain that the contract settled test USD₮ and the rand payout screen is a simulation. Close with the business hypothesis that better evidence and one settlement receipt could reduce claims administration.
+- Use fictional details only. Reload/reset clears local workflow and assistant progress.
+- Never show seeds, filled env files, private notes or a mainnet network.
+- If mentioning the source, use “an existing verified incident-alert feed for Cape Town small shops (partner)”. The bundled incident record is fictional; no feed is connected.
+- Existing Sepolia evidence is independent of preparation edits. No transaction in this pass is authorised.
+- Ten discovery calls, including four brokerages, two meetings next week and two brokerages expressing willingness to pay are user-reported discovery signals. They are not paid adoption or measured savings. Keep them out of the UI unless needed for a separate validation discussion.
+- Prior payment-signing and service-credit recordings are historical material, not the current demo procedure. See Testnet for existing evidence.

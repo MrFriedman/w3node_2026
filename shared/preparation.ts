@@ -19,8 +19,8 @@ const faq = 'https://sasria.co.za/claims-and-underwriting/frequently-asked-quest
 export const FORM_FIXTURE: CaseDraft = {
   fields: {
     claimant: 'FICTIONAL SHOP OWNER', policy: 'DEMO-POLICY-001',
-    incident: 'riot', date: '2026-11-13', location: 'FICTIONAL SHOP LOCATION',
-    description: 'Fictional stock damage near a reported area incident; cause and coverage require human assessment.',
+    incident: 'theft', date: '2026-11-13', location: 'FICTIONAL SHOP LOCATION',
+    description: 'Fictional theft of stock from the shop; the insurer must assess cause and coverage.',
     loss: '200.00',
   },
   history: [],

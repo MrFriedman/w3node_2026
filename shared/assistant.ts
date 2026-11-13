@@ -1,4 +1,4 @@
-export const CASE_ID = 'CLM–001'
+export const CASE_ID = 'PREP–THEFT–001'
 export const LANGUAGES = { en: 'English', af: 'Afrikaans', xh: 'isiXhosa' } as const
 export type Language = keyof typeof LANGUAGES
 export const FIELDS = ['claimant', 'policy', 'incident', 'date', 'location', 'description', 'loss', 'evidence', 'banking'] as const

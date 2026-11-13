@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ComponentRef } from 'react'
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder } from 'expo-audio'
 import { CASE_ID, FIELDS, INVOICE, SAMPLE_INVOICE, LANGUAGES, QUESTIONS, VOICE_SAMPLE, cleanDraft, isQuestionOrRequest, extractFixture, extractInvoice, type CaseDraft, type Draft, type Field, type Language, type Proposal } from '../../shared/assistant.ts'
-import { FIELD_LABELS, attachments, missingSummary, brokerBrief, followUp, type PreparationOptions } from '../../shared/preparation.ts'
+import { FIELD_LABELS, attachments, missingSummary, brokerBrief, followUp, type Attachment, type PreparationOptions } from '../../shared/preparation.ts'
 import { colors, fonts, typography } from './theme'
 import { Body, Button, Card, Muted } from './ui'
 
@@ -14,7 +14,8 @@ export type ChatState = { messages: Message[]; awaiting?: Field; skipped: Field[
 export const NEW_CHAT: ChatState = { messages: [], skipped: [], language: 'en', text: '' }
 const missing = (fields: Draft, skipped: Field[] = []) => FIELDS.find(field => field !== 'banking' && !fields[field] && !skipped.includes(field))
 
-export function AssistantScreen({ chat, update, draft, confirm, onBack, open, payment, refresh, onSelectCase, role, options, onBusyChange }: {
+export function AssistantScreen({ chat, update, draft, confirm, onBack, open, payment, refresh, onSelectCase, role, options, onBusyChange, documents: suppliedDocuments }: {
+  documents?: Attachment[]
   role: 'Shop' | 'Broker' | 'Insurer' | 'Platform'
   options: PreparationOptions
   onBusyChange: (busy: boolean) => void
@@ -39,7 +40,7 @@ export function AssistantScreen({ chat, update, draft, confirm, onBack, open, pa
   const busy = useRef(false)
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY)
   useEffect(() => { onBusyChange(pending || recording); return () => onBusyChange(false) }, [pending, recording, onBusyChange])
-  const documents = attachments(chat.invoiceReviewed)
+  const documents = suppliedDocuments ?? attachments(chat.invoiceReviewed)
   const id = () => Date.now().toString(36) + '-' + ++counter.current
   const append = (...messages: Message[]) => update(c => ({ ...c, messages: [...c.messages, ...messages] }))
   const say = (text: string, link?: Message['link']) => append({ speaker: 'assistant', text, link })
