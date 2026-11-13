@@ -1,3 +1,5 @@
+import { EMPTY_DRAFT, FIELDS, INVOICE, confirmProposal, conflicts } from '../../shared/assistant.ts'
+import { AssistantScreen, NEW_CHAT, fieldLabels } from './AssistantScreen'
 import { useEffect, useRef, useState, type ComponentRef } from 'react'
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
@@ -39,6 +41,10 @@ function Choice({ label, selected, onPress }: { label: string; selected: boolean
 }
 
 export function ClaimScreen() {
+  const [chatPage, setChatPage] = useState<'select' | 'chat'>()
+  const [chat, setChat] = useState(NEW_CHAT)
+  const [draft, setDraft] = useState(EMPTY_DRAFT)
+  const [showBrief, setShowBrief] = useState(false)
   const [tab, setTab] = useState<'Claims' | 'Activity'>('Claims')
   const [detail, setDetail] = useState(false)
   const [section, setSection] = useState<Section>('Overview')
@@ -88,6 +94,14 @@ export function ClaimScreen() {
     </View>)}
     {copied ? <Text accessibilityLiveRegion="polite" style={s.caption}>{copied}</Text> : null}
   </View>
+  const paymentAnswer = [
+    view.refresh === 'error' ? view.snapshot ? 'Receipt is stale. Last verified: ' + status + '.' : 'A verified settlement receipt is unavailable.' : status + '.',
+    'Rand delivery is simulated. No actual rand has been delivered.',
+  ].join(' ')
+  if (chatPage) return <AssistantScreen chat={chat} update={setChat} draft={draft}
+    confirm={proposal => setDraft(current => confirmProposal(current, proposal))}
+    onBack={() => setChatPage(undefined)} open={next => { setChatPage(undefined); navigate(next) }}
+    payment={paymentAnswer} refresh={refresh} onSelectCase={chatPage === 'select' ? () => setChatPage('chat') : undefined} />
   return <View style={s.root}>
     <View style={s.header}><View><Text style={s.wordmark}>{PRODUCT_NAME}<Text style={s.dot}> ●</Text></Text><Text style={s.headerSub}>CLAIMS WORKSPACE</Text></View>
       <Pressable accessibilityRole="button" accessibilityLabel="Demo settings and operator instructions" accessibilityState={{ expanded: panel }} onPress={() => { setPanel(!panel); scroll.current?.scrollTo({ y: 0, animated: false }) }} style={s.demoButton}><Text style={s.choiceText}>Demo {panel ? '−' : '+'}</Text></Pressable>
@@ -112,6 +126,7 @@ export function ClaimScreen() {
         {!detail ? <>
           <Text accessibilityRole="header" style={s.title}>{role === 'Shop' ? 'Your recovery' : 'Claims'}</Text>
           <Body>{role === 'Shop' ? 'Follow your sample claim and its next step.' : 'A clear path from evidence to settlement.'}</Body>
+          {role === 'Shop' && <Button label="Ask HowlPay" onPress={() => setChatPage('select')} />}
           <View style={s.sectionHeading}><Label>{role === 'Shop' ? 'YOUR CASE FILE' : 'CASE FILES'}</Label><Muted>1 fictional case</Muted></View>
           <View style={s.claimCard}>
             <View style={s.wrap}><Label>CLM–001</Label><Badge>Fictional evidence</Badge></View>
@@ -128,10 +143,26 @@ export function ClaimScreen() {
           <View style={s.note}><Label>BUILT AROUND A HUMAN DECISION</Label><Muted>Evidence supports assessment. The insurer decides the claim under the policy; the contract records and enforces the token payout.</Muted></View>
         </> : <>
           <Button label="← All claims" kind="ghost" onPress={() => { setDetail(false); scroll.current?.scrollTo({ y: 0 }) }} />
+          {role === 'Shop' && <Button label="Ask HowlPay" onPress={() => setChatPage('chat')} />}
           <Label>CLM–001 · FICTIONAL CASE</Label><Heading>Small-shop recovery</Heading>
           <View style={s.wrap}><Text style={s.detailAmount}>R200.00</Text><Badge good={claim?.state === 'paid'}>{claim?.state === 'paid' ? 'Test tokens released' : status}</Badge></View>
           <View style={s.sectionNav}>{sections.filter(x => role !== 'Shop' || x !== 'Decision').map(x => <Choice key={x} label={x} selected={section === x} onPress={() => navigate(x)} />)}</View>
           {(section === 'Overview' || role === 'Shop' && section === 'Decision') && <>
+            {draft.history.length > 0 && <Card><Label>LOCAL DEMO DRAFT</Label>
+              {FIELDS.map(field => <Body key={field}>{fieldLabels[field]} · {draft.fields[field] ?? 'Unresolved'}</Body>)}
+              <Button label="Review draft sources" kind="ghost" onPress={() => navigate('Evidence')} />
+            </Card>}
+            {role === 'Insurer' && <Card><Heading>Claims-handler brief</Heading>
+              <Muted>Uses the confirmed demo draft and reviewed sample evidence.</Muted>
+              <Button label={showBrief ? 'Hide brief' : 'Generate brief'} kind="ghost" onPress={() => setShowBrief(!showBrief)} />
+              {showBrief && <>
+                <Body>Timeline · {draft.fields.date ?? 'Incident date unresolved'} · {draft.fields.description ?? 'No confirmed incident narrative'}</Body>
+                <Body>Reported loss · {draft.fields.loss ? 'R' + draft.fields.loss : 'Unresolved'}</Body>
+                <Body>Evidence · {draft.fields.evidence ?? 'None reported'}{chat.invoiceReviewed ? ' · ' + INVOICE.id + ' reviewed' : ''}</Body>
+                <Muted>Open questions · {FIELDS.filter(field => !draft.fields[field]).map(field => fieldLabels[field]).join(', ') || 'No missing draft fields'}{chat.invoiceReviewed && conflicts(draft.fields).length > 0 ? ' · Invoice and draft values differ. Review both sources.' : ''}</Muted>
+                <Button label="Open draft and evidence sources" kind="ghost" onPress={() => navigate('Evidence')} />
+              </>}
+            </Card>}
             <Card><Label>CLAIM SUMMARY</Label><Body>Incident near the shop</Body><Muted>Sample alert · 14:05 · 300 m away. The date, cause of loss and coverage have not been established by this fictional pack.</Muted>
               <View style={s.divider} /><Body>Evidence needs human review</Body><Muted>Five attachment slots are placeholders, not submitted documents. This is not a complete, validated insurance claim.</Muted>
               <Button label="Inspect the evidence →" onPress={() => navigate('Evidence')} />
@@ -140,6 +171,12 @@ export function ClaimScreen() {
           </>}
           {section === 'Evidence' && <>
             <Heading>Evidence, in context</Heading><Muted>Inspect each item before making a decision. This synthetic pack demonstrates organisation, not verified completeness.</Muted>
+            {draft.history.length > 0 && <Card><Label>CLAIMANT DRAFT SOURCES</Label>
+              {draft.history.slice(-5).reverse().map(item => <View key={item.id}>
+                <Body>{item.source}</Body><Muted>{FIELDS.filter(field => item.fields[field]).map(field => fieldLabels[field] + ': ' + item.fields[field]).join(' · ')}</Muted>
+              </View>)}
+            </Card>}
+            {chat.invoiceReviewed && <Card><Label>{INVOICE.id}</Label><Body>Purchase date · {INVOICE.date}</Body><Body>Invoice total · R{INVOICE.loss}</Body><Muted>Fictional evidence reviewed in chat.</Muted></Card>}
             {evidence.map((item, i) => <View key={item.title} style={s.evidenceCard}>
               <Pressable accessibilityRole="button" accessibilityState={{ expanded: expanded === i }} onPress={() => setExpanded(expanded === i ? null : i)} style={s.evidenceButton}>
                 <View style={s.evidenceNumber}><Text style={s.choiceText}>{String(i + 1).padStart(2, '0')}</Text></View><View style={s.flex}><Text style={s.rowTitle}>{item.title}</Text><Muted>{item.kind}</Muted></View><Text style={s.choiceText}>{expanded === i ? '−' : '+'}</Text>

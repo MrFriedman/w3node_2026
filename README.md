@@ -125,3 +125,18 @@ Third-party code and references:
 - Frankfurter (European Central Bank reference rates) for the 11 Nov 2026 USD/ZAR snapshot used as the demo FX rate.
 
 Security: testnet only. The script refuses a chain id other than Sepolia 11155111. Never commit seeds, private keys, or a filled-in `.env`. `.env` is gitignored. The wallet script will not generate a phrase and will not print the one you set. Do not fund the public BIP-39 test mnemonic, and do not use any test phrase on mainnet.
+
+### Ask HowlPay prototype
+
+In Expo, open **Demo → Shop → Ask HowlPay**, then select CLM–001. The offline demo supports fictional intake, editable draft confirmation, sample invoice extraction, discrepancy review, and sample voice transcripts in English, Afrikaans, and isiXhosa. Switch to **Insurer**, open the claim, and choose **Generate brief** to review confirmed draft details and their sources. Drafts and conversations are kept in memory for the current app session.
+
+For model-assisted intake, run `npm --prefix scripts run assistant` with these server environment variables:
+
+| Variable | Purpose |
+| --- | --- |
+| `ASSISTANT_MODEL_URL`, `ASSISTANT_MODEL` | Optional OpenAI-compatible chat completions endpoint and model. Without them, the server uses the deterministic fixture. |
+| `ASSISTANT_TRANSCRIPTION_URL`, `ASSISTANT_TRANSCRIPTION_MODEL` | Optional multipart transcription endpoint and model. Choose a model that supports the languages being tested. |
+| `ASSISTANT_API_KEY` | Optional server-side credential for those endpoints. |
+| `ASSISTANT_HOST`, `ASSISTANT_PORT` | Defaults to `127.0.0.1:8787`. For a phone, bind to a reachable interface on a trusted development network. |
+
+Start Expo with `EXPO_PUBLIC_ASSISTANT_URL=http://localhost:8787` for web, or substitute the development machine's reachable address on a phone. Use fictional recordings only. For browser recording, the browser must allow microphone access. Expo Audio provides recording (MIT, Expo). `npm --prefix scripts run test:assistant` runs the focused tests.

@@ -21,6 +21,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow HowlPay to record a fictional claim voice note.",
+          "enableBackgroundRecording": false
+        }
+      ]
+    ]
   }
 }
