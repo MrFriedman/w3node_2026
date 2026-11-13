@@ -55,11 +55,16 @@ A Cape Town short-term brokerage, one phone call on 13 Nov, with a principal who
 
 ## Underwriting manager
 
-A short callback on 13 Nov.
+Two conversations on 13 Nov: a short morning callback, then a longer afternoon follow-up with the same contact, who sits on the policy-sales / broker-relationship side rather than in claims or IT.
 
-- Offered anonymised stats by email, and to check for a shareable workflow.
-- Firm line: no personal data can be released.
-- No walk-through of a claim yet, and no process or cost figures yet.
+- The contact offered anonymised stats by email, and to check for a shareable workflow, but will first ask the CEO what may be shared. Firm line: no personal data can be released.
+- They are an underwriting manager: they deal with brokers, not with clients directly, because they are not licensed to give advice. They can only give factual advice and must refer a client back to the broker. That is why the app and portal they are building are for brokers, not clients.
+- They are already in a digital transformation: a new system, a broker app, and substantial use of AI. A few brokers are testing the app. The contact described it as "kind of chaos," is not involved in the testing, and could not describe the product in any depth.
+- No figures on claims-handling cost, incomplete files, the long proposal form, riot or special-risk proof, or payout method and timing. The contact will ask the CEO to recommend someone in claims who can spend 15 minutes walking through the workflow.
+- The CEO is the decision-maker. The contact said he is strong on IT, very busy (office in one city, sometimes lives in another, travels the country), and is open to a short conversation. An email to him was authorised; the address will follow, and the email should name the referring brokerage. Payments and claims security were routed to him, not described and not dismissed.
+- No view was given on a client-reviewed pre-filled insurer form, a missing-document checklist, a human handoff, or a paid pilot. The licensing constraint does mean any client-facing pre-fill has to sit with the broker and the client, not as a direct underwriting-manager-to-client channel.
+- Whether they write an SME or commercial book was not discussed.
+- No walk-through of a claim yet, and no process or cost figures yet. This remains a path to a decision-maker and to claims operations, not yet insurer-side evidence on the claims hypotheses.
 
 ## Other outreach
 
@@ -68,12 +73,13 @@ Outreach is out to the riot-cover state insurer and the brokers' association. No
 ## Implications for HowlPay
 
 - Auto-fill the insurer's own forms and add a per-cause document checklist. Do this for claims now. Make the form match the policy (the right number of vehicles, hide irrelevant sections) and flag missing fields and documents before submission. That missing-document check is what cut Broker A's claims delays. Proposal and onboarding forms were the stronger pain at Broker A, and belong on the roadmap after the claims-form work.
-- The client, not the broker, may have to complete the insurer's claim form. At Broker C the broker can help, but is not allowed to fill it in on the client's behalf. Some of those forms are not fillable PDFs. So auto-fill should be a client-facing pre-fill the client reviews and submits, not a broker-completes-and-sends shortcut that some insurers would reject. Real PDF form-filling stays on the roadmap.
+- The client, not the broker, may have to complete the insurer's claim form. At Broker C the broker can help, but is not allowed to fill it in on the client's behalf. Some of those forms are not fillable PDFs. An underwriting manager is also not licensed to advise or deal with the client directly, and must refer them back to the broker. So auto-fill should be a client-facing pre-fill the client reviews and submits, sitting with the broker and the client, not a broker-completes-and-sends shortcut, and not a direct underwriting-manager-to-client channel. Real PDF form-filling stays on the roadmap.
 - Keep the insurer's own form and the broker-only portal. Do not replace them with a new client portal those insurers do not want. Information gathering, not typing, is the bottleneck on proposal packs; email remains the client channel.
+- This underwriting manager is already building a broker app and portal and using AI, now in testing with a few brokers. Do not pitch a competing broker portal. Learn what that app already does before overlapping it. Position HowlPay as completing the client-side pack (pre-filled insurer form, checklist, proof of unrest) and, on the underwriting-manager or insurer side, the payout rail.
 - Attach proof of unrest from an existing verified incident-alert feed for Cape Town small shops (partner). Brokers are one step removed from that scheme: the insurer deals with it. Test the evidence gap with the claims owner, not another broker.
 - Offer a WhatsApp-style assistant for first-time claimants, and for missing-field follow-up, with a human still able to treat frequent and first-time claimants differently. A live handoff to a person at the brokerage is a requirement, not a nice-to-have. Small brokerages sell personal touch and will reject a chatbot-only front door. Position this as freeing up capacity, not as big-corporate automation.
 - Data security, in line with legislation, should be visible in the pitch. Do not lead broker conversations with the payout rail or with the underlying settlement technology.
-- Escrow sits with insurers and embedded micro-insurance platforms, not with brokers. Do not lead with escrow when talking to this kind of broker. Lead with complete files, a policy-specific form, and a familiar business chat line. Sell to the claims and operations side, not by asking the old-school broker to change how he works.
+- Escrow sits with insurers and embedded micro-insurance platforms, not with brokers. Do not lead with escrow when talking to this kind of broker. Lead with complete files, a policy-specific form, and a familiar business chat line. Sell to the claims and operations side, not by asking the old-school broker to change how he works. The first underwriting-manager path to a decision-maker is now open: the CEO is IT-literate, and payments and claims security were routed to him rather than dismissed. That is still only a door, not payout or escrow validation.
 - Paper-file digitisation is a related pain at this kind of office, not V1.
 - Two brokerages are now open to reviewing a first version once their decision-makers have been briefed at the start of next week. That is still not a paid pilot.
-- Still unvalidated: claims-handling cost at an insurer, riot proof at the claims owner, payout rails and failed payouts, whether there is an SME or commercial book, and a paid pilot. The only clean post-approval payout figure remains about five days (Broker B). Broker C's "couple of days" is for a straightforward claim through the process, and lengthens when an assessor is required.
+- Still unvalidated: claims-handling cost at an insurer or underwriting manager, riot proof at the claims owner, payout rails and failed payouts, whether there is an SME or commercial book, and a paid pilot. Anonymised stats and a claims-workflow walkthrough from the underwriting manager are now gated on CEO approval. The only clean post-approval payout figure remains about five days (Broker B). Broker C's "couple of days" is for a straightforward claim through the process, and lengthens when an assessor is required.
